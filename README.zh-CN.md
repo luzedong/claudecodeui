@@ -1,18 +1,16 @@
 <div align="center">
-  <img src="public/logo.svg" alt="CloudCLI UI" width="64" height="64">
-  <h1>Cloud CLI（又名 Claude Code UI）</h1>
-  <p><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>、<a href="https://docs.cursor.com/en/cli/overview">Cursor CLI</a>、<a href="https://developers.openai.com/codex">Codex</a> 和 <a href="https://geminicli.com/">Gemini-CLI</a> 的桌面和移动端 UI。可在本地或远程使用，从任何地方查看激活的项目与会话。</p>
+  <img src="public/logo.svg" alt="Claude Code UI" width="64" height="64">
+  <h1>Claude Code UI（luzedong fork）</h1>
+  <p><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>、<a href="https://docs.cursor.com/en/cli/overview">Cursor CLI</a>、<a href="https://developers.openai.com/codex">Codex</a> 和 <a href="https://geminicli.com/">Gemini-CLI</a> 的桌面与移动端 UI。<br>这个 fork 更偏向 shell-first 工作流，支持多 provider shell、按项目保留 shell 历史，以及文件、Git、MCP 与移动端访问。</p>
 </div>
 
 <p align="center">
-  <a href="https://cloudcli.ai">CloudCLI Cloud</a> · <a href="https://cloudcli.ai/docs">文档</a> · <a href="https://discord.gg/buxwujPNRE">Discord</a> · <a href="https://github.com/siteboon/claudecodeui/issues">Bug 报告</a> · <a href="CONTRIBUTING.md">贡献指南</a>
+  <a href="https://github.com/luzedong/claudecodeui">GitHub</a> · <a href="https://github.com/luzedong/claudecodeui/issues">Bug 报告</a> · <a href="https://www.npmjs.com/package/@luzedong/claude-code-ui">npm</a> · <a href="CONTRIBUTING.md">贡献指南</a>
 </p>
 
 <p align="center">
-  <a href="https://cloudcli.ai"><img src="https://img.shields.io/badge/☁️_CloudCLI_Cloud-Try_Now-0066FF?style=for-the-badge" alt="CloudCLI Cloud"></a>
-  <a href="https://discord.gg/buxwujPNRE"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="加入 Discord 社区"></a>
-  <br><br>
-  <a href="https://trendshift.io/repositories/15586" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15586" alt="siteboon%2Fclaudecodeui | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+  <a href="https://www.npmjs.com/package/@luzedong/claude-code-ui"><img src="https://img.shields.io/badge/npm-%40luzedong%2Fclaude--code--ui-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm package"></a>
+  <a href="https://github.com/luzedong/claudecodeui"><img src="https://img.shields.io/badge/GitHub-luzedong%2Fclaudecodeui-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repository"></a>
 </p>
 
 <div align="right"><i><a href="./README.md">English</a> · <a href="./README.ru.md">Русский</a> · <a href="./README.de.md">Deutsch</a> · <a href="./README.ko.md">한국어</a> · <b>中文</b> · <a href="./README.ja.md">日本語</a></i></div>
@@ -29,13 +27,13 @@
 <h3>桌面视图</h3>
 <img src="public/screenshots/desktop-main.png" alt="桌面界面" width="400">
 <br>
-<em>显示项目概览和聊天的主界面</em>
+<em>主界面展示项目历史、shell 工作区、文件与 Git</em>
 </td>
 <td align="center">
 <h3>移动体验</h3>
 <img src="public/screenshots/mobile-chat.png" alt="移动界面" width="250">
 <br>
-<em>具有触控导航的响应式移动设计</em>
+<em>适合 shell 访问与项目导航的响应式移动布局</em>
 </td>
 </tr>
 <tr>
@@ -43,7 +41,7 @@
 <h3>CLI 选择</h3>
 <img src="public/screenshots/cli-selection.png" alt="CLI 选择" width="400">
 <br>
-<em>在 Claude Code、Gemini、Cursor CLI 与 Codex 之间进行选择</em>
+<em>在 Claude Code、Gemini、Cursor CLI 与 Codex 之间选择</em>
 </td>
 </tr>
 </table>
@@ -52,71 +50,68 @@
 
 ## 功能
 
-- **响应式设计** - 在桌面、平板和移动设备上无缝运行，让您随时随地使用 Agents
-- **交互聊天界面** - 内置聊天 UI，轻松与 Agents 交流
-- **集成 Shell 终端** - 通过内置 shell 功能直接访问 Agents CLI
+- **Shell-first 工作区** - 围绕持久化 shell 会话，而不是 chat-first 流程
+- **多 provider Shell** - 在同一套 UI 中启动 Claude Code、Codex、Cursor 风格会话、Gemini CLI 或系统 Shell
+- **按项目保留 Shell 历史** - 切换项目后可恢复对应 shell 工作区
+- **Provider 感知的新建 Shell** - 在头部直接按 provider 创建 shell，并显示对应图标
+- **响应式设计** - 支持桌面、平板与移动端
 - **文件浏览器** - 交互式文件树，支持语法高亮与实时编辑
-- **Git 浏览器** - 查看、暂存并提交更改，还可切换分支
-- **会话管理** - 恢复对话、管理多个会话并跟踪历史记录
-- **插件系统** - 通过自定义选项卡、后端服务与集成扩展 CloudCLI。 [开始构建 →](https://github.com/cloudcli-ai/cloudcli-plugin-starter)
-- **TaskMaster AI 集成** *(可选)* - 结合 AI 任务规划、PRD 分析与工作流自动化，实现高级项目管理
-- **模型兼容性** - 支持 Claude、GPT、Gemini 模型家族（完整支持列表见 [`shared/modelConstants.js`](shared/modelConstants.js)）
+- **Git 浏览器** - 查看、暂存并提交改动，也可切换分支
+- **会话管理** - 在侧边栏浏览项目与 session 历史
+- **插件系统** - 通过自定义标签页、后端服务与集成扩展 UI。[开始构建 →](https://github.com/cloudcli-ai/cloudcli-plugin-starter)
+- **TaskMaster AI 集成** *(可选)* - AI 任务规划、PRD 分析与工作流自动化
+- **模型兼容性** - 支持 Claude、GPT、Gemini 模型家族（完整列表见 [`shared/modelConstants.js`](shared/modelConstants.js)）
 
 ## 快速开始
 
-### CloudCLI Cloud（推荐）
+### 自托管
 
-无需本地设置即可快速启动。提供可通过网络浏览器、移动应用、API 或喜欢的 IDE 访问的完全集装式托管开发环境。
-
-**[立即开始 CloudCLI Cloud](https://cloudcli.ai)**
-
-### 自托管（开源）
-
-启动 CloudCLI UI，只需一行 `npx`（需要 Node.js v22+）：
+使用 **npx** 立即运行这个 fork（需要 **Node.js** v22+）：
 
 ```bash
-npx @siteboon/claude-code-ui
+npx @luzedong/claude-code-ui
 ```
 
-或进行全局安装，便于日常使用：
+或全局安装：
 
 ```bash
-npm install -g @siteboon/claude-code-ui
+npm install -g @luzedong/claude-code-ui
 cloudcli
 ```
 
-打开 `http://localhost:3001`，系统会自动发现所有现有会话。
+打开 `http://localhost:3001`，系统会自动发现本地已有项目与会话。
 
-更多配置选项、PM2、远程服务器设置等，请参阅 **[文档 →](https://cloudcli.ai/docs)**
+### 从源码运行
+
+```bash
+git clone https://github.com/luzedong/claudecodeui.git
+cd claudecodeui
+npm install
+npm run dev
+```
+
+### 包与链接
+
+- npm: [`@luzedong/claude-code-ui`](https://www.npmjs.com/package/@luzedong/claude-code-ui)
+- GitHub: [`luzedong/claudecodeui`](https://github.com/luzedong/claudecodeui)
 
 ---
 
 ## 哪个选项更适合你？
 
-CloudCLI UI 是 CloudCLI Cloud 的开源 UI 层。你可以在本地机器上自托管它，也可以使用提供团队功能与深入集成的 CloudCLI Cloud。
+这个 fork 面向希望在本地 CLI 工具之上使用 shell-first UI 的开发者。
 
-| | CloudCLI UI（自托管） | CloudCLI Cloud |
-|---|---|---|
-| **适合对象** | 需要为本地代理会话提供完整 UI 的开发者 | 需要部署在云端，随时从任何地方访问代理的团队与开发者 |
-| **访问方式** | 通过 `[yourip]:port` 在浏览器中访问 | 浏览器、任意 IDE、REST API、n8n |
-| **设置** | `npx @siteboon/claude-code-ui` | 无需设置 |
-| **机器需保持开机吗** | 是 | 否 |
-| **移动端访问** | 网络内任意浏览器 | 任意设备（原生应用即将推出） |
-| **可用会话** | 自动发现 `~/.claude` 中的所有会话 | 云端环境内的会话 |
-| **支持的 Agents** | Claude Code、Cursor CLI、Codex、Gemini CLI | Claude Code、Cursor CLI、Codex、Gemini CLI |
-| **文件浏览与 Git** | 内置于 UI | 内置于 UI |
-| **MCP 配置** | UI 管理，与本地 `~/.claude` 配置同步 | UI 管理 |
-| **IDE 访问** | 本地 IDE | 任何连接到云环境的 IDE |
-| **REST API** | 是 | 是 |
-| **n8n 节点** | 否 | 是 |
-| **团队共享** | 否 | 是 |
-| **平台费用** | 免费开源 | 起价 $7/月 |
-
-> 两种方式都使用你自己的 AI 订阅（Claude、Cursor 等）— CloudCLI 提供环境，而非 AI。
-
----
-
-## 安全与工具配置
+| | luzedong fork |
+|---|---|
+| **适合对象** | 需要本地 agent 会话 shell-first UI 的开发者 |
+| **访问方式** | 浏览器通过 `[yourip]:port` 访问 |
+| **安装方式** | `npx @luzedong/claude-code-ui` |
+| **机器需保持开机** | 是 |
+| **移动端访问** | 网络内任意浏览器 |
+| **可用会话** | 自动发现本地项目与 session 历史 |
+| **支持 Agents** | Claude Code、Cursor CLI、Codex、Gemini CLI |
+| **Files / Git / MCP** | UI 内置 |
+| **包名** | `@luzedong/claude-code-ui` |
 
 **🔒 重要提示**: 所有 Claude Code 工具默认**禁用**，可防止潜在的有害操作自动运行。
 

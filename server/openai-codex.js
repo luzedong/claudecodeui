@@ -20,6 +20,10 @@ import { createNormalizedMessage } from './providers/types.js';
 
 // Track active sessions
 const activeCodexSessions = new Map();
+const DEFAULT_CODEX_CONFIG = {
+  model_reasoning_summary: 'detailed',
+  model_supports_reasoning_summaries: true
+};
 
 /**
  * Transform Codex SDK event to WebSocket message format
@@ -179,8 +183,8 @@ function mapPermissionModeToCodexOptions(permissionMode) {
     case 'default':
     default:
       return {
-        sandboxMode: 'workspace-write',
-        approvalPolicy: 'untrusted'
+        sandboxMode: 'danger-full-access',
+        approvalPolicy: 'never'
       };
   }
 }
@@ -212,7 +216,9 @@ export async function queryCodex(command, options = {}, ws) {
 
   try {
     // Initialize Codex SDK
-    codex = new Codex();
+    codex = new Codex({
+      config: DEFAULT_CODEX_CONFIG
+    });
 
     // Thread options with sandbox and approval settings
     const threadOptions = {
@@ -220,7 +226,8 @@ export async function queryCodex(command, options = {}, ws) {
       skipGitRepoCheck: true,
       sandboxMode,
       approvalPolicy,
-      model
+      model,
+      modelReasoningEffort: 'high'
     };
 
     // Start or resume thread

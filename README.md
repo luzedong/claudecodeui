@@ -1,41 +1,37 @@
 <div align="center">
-  <img src="public/logo.svg" alt="CloudCLI UI" width="64" height="64">
-  <h1>Cloud CLI (aka Claude Code UI)</h1>
-  <p>A desktop and mobile UI for <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>, <a href="https://docs.cursor.com/en/cli/overview">Cursor CLI</a>, <a href="https://developers.openai.com/codex">Codex</a>, and <a href="https://geminicli.com/">Gemini-CLI</a>.<br>Use it locally or remotely to view your active projects and sessions from everywhere.</p>
+  <img src="public/logo.svg" alt="Claude Code UI" width="64" height="64">
+  <h1>Claude Code UI (luzedong fork)</h1>
+  <p>A desktop and mobile UI for <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>, <a href="https://docs.cursor.com/en/cli/overview">Cursor CLI</a>, <a href="https://developers.openai.com/codex">Codex</a>, and <a href="https://geminicli.com/">Gemini-CLI</a>.<br>This fork is tuned for a shell-first workflow with multi-provider shells, project-aware shell history, files, Git, MCP, and mobile access.</p>
 </div>
 
 <p align="center">
-  <a href="https://cloudcli.ai">CloudCLI Cloud</a> · <a href="https://cloudcli.ai/docs">Documentation</a> · <a href="https://discord.gg/buxwujPNRE">Discord</a> · <a href="https://github.com/siteboon/claudecodeui/issues">Bug Reports</a> · <a href="CONTRIBUTING.md">Contributing</a>
+  <a href="https://github.com/luzedong/claudecodeui">GitHub</a> · <a href="https://github.com/luzedong/claudecodeui/issues">Bug Reports</a> · <a href="https://www.npmjs.com/package/@luzedong/claude-code-ui">npm</a> · <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
 <p align="center">
-  <a href="https://cloudcli.ai"><img src="https://img.shields.io/badge/☁️_CloudCLI_Cloud-Try_Now-0066FF?style=for-the-badge" alt="CloudCLI Cloud"></a>
-  <a href="https://discord.gg/buxwujPNRE"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Join our Discord"></a>
-  <br><br>
-  <a href="https://trendshift.io/repositories/15586" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15586" alt="siteboon%2Fclaudecodeui | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+  <a href="https://www.npmjs.com/package/@luzedong/claude-code-ui"><img src="https://img.shields.io/badge/npm-%40luzedong%2Fclaude--code--ui-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm package"></a>
+  <a href="https://github.com/luzedong/claudecodeui"><img src="https://img.shields.io/badge/GitHub-luzedong%2Fclaudecodeui-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repository"></a>
 </p>
-
-<div align="right"><i><b>English</b> · <a href="./README.ru.md">Русский</a> · <a href="./README.de.md">Deutsch</a> · <a href="./README.ko.md">한국어</a> · <a href="./README.zh-CN.md">中文</a> · <a href="./README.ja.md">日本語</a></i></div>
 
 ---
 
 ## Screenshots
 
 <div align="center">
-  
+
 <table>
 <tr>
 <td align="center">
 <h3>Desktop View</h3>
 <img src="public/screenshots/desktop-main.png" alt="Desktop Interface" width="400">
 <br>
-<em>Main interface showing project overview and chat</em>
+<em>Main interface with project history, shell workspace, files, and Git</em>
 </td>
 <td align="center">
 <h3>Mobile Experience</h3>
 <img src="public/screenshots/mobile-chat.png" alt="Mobile Interface" width="250">
 <br>
-<em>Responsive mobile design with touch navigation</em>
+<em>Responsive mobile layout for shell access and project navigation</em>
 </td>
 </tr>
 <tr>
@@ -48,76 +44,72 @@
 </tr>
 </table>
 
-
-
 </div>
 
 ## Features
 
-- **Responsive Design** - Works seamlessly across desktop, tablet, and mobile so you can also use Agents from mobile 
-- **Interactive Chat Interface** - Built-in chat interface for seamless communication with the Agents
-- **Integrated Shell Terminal** - Direct access to the Agents CLI through built-in shell functionality
+- **Shell-first Workspace** - Optimized around persistent shell sessions instead of a chat-first flow
+- **Multi-provider Shells** - Launch Claude Code, Codex, Cursor-compatible sessions, Gemini CLI, or plain system shells from one UI
+- **Per-project Shell History** - Each project keeps its own shells so switching projects restores the right workspace
+- **Provider-aware Shell Creation** - Create new shells directly from the header with provider-specific actions and icons
+- **Responsive Design** - Works across desktop, tablet, and mobile
 - **File Explorer** - Interactive file tree with syntax highlighting and live editing
-- **Git Explorer** - View, stage and commit your changes. You can also switch branches 
-- **Session Management** - Resume conversations, manage multiple sessions, and track history
-- **Plugin System** - Extend CloudCLI with custom plugins — add new tabs, backend services, and integrations. [Build your own →](https://github.com/cloudcli-ai/cloudcli-plugin-starter)
+- **Git Explorer** - View, stage and commit your changes. You can also switch branches
+- **Session Management** - Browse project and session history from the sidebar
+- **Plugin System** - Extend the UI with custom plugins — add new tabs, backend services, and integrations. [Build your own →](https://github.com/cloudcli-ai/cloudcli-plugin-starter)
 - **TaskMaster AI Integration** *(Optional)* - Advanced project management with AI-powered task planning, PRD parsing, and workflow automation
 - **Model Compatibility** - Works with Claude, GPT, and Gemini model families (see [`shared/modelConstants.js`](shared/modelConstants.js) for the full list of supported models)
 
-
 ## Quick Start
 
-### CloudCLI Cloud (Recommended)
+### Self-Hosted
 
-The fastest way to get started — no local setup required. Get a fully managed, containerized development environment accessible from the web, mobile app, API, or your favorite IDE.
-
-**[Get started with CloudCLI Cloud](https://cloudcli.ai)**
-
-
-### Self-Hosted (Open source)
-
-Try CloudCLI UI instantly with **npx** (requires **Node.js** v22+):
+Try this fork instantly with **npx** (requires **Node.js** v22+):
 
 ```
-npx @siteboon/claude-code-ui
+npx @luzedong/claude-code-ui
 ```
 
 Or install **globally** for regular use:
 
 ```
-npm install -g @siteboon/claude-code-ui
+npm install -g @luzedong/claude-code-ui
 cloudcli
 ```
 
-Open `http://localhost:3001` — all your existing sessions are discovered automatically.
+Open `http://localhost:3001` — existing local projects and sessions are discovered automatically.
 
-Visit the **[documentation →](https://cloudcli.ai/docs)** for more full configuration options, PM2, remote server setup and more
+### From Source
 
+```
+git clone https://github.com/luzedong/claudecodeui.git
+cd claudecodeui
+npm install
+npm run dev
+```
+
+### Package / Links
+
+- npm: [`@luzedong/claude-code-ui`](https://www.npmjs.com/package/@luzedong/claude-code-ui)
+- GitHub: [`luzedong/claudecodeui`](https://github.com/luzedong/claudecodeui)
 
 ---
 
 ## Which option is right for you?
 
-CloudCLI UI is the open source UI layer that powers CloudCLI Cloud. You can self-host it on your own machine, or use CloudCLI Cloud which builds on top of it with a full managed cloud environment, team features, and deeper integrations.
+This fork is aimed at developers who want a self-hosted shell-first UI on top of their local CLI tools.
 
-| | CloudCLI UI (Self-hosted) | CloudCLI Cloud |
-|---|---|---|
-| **Best for** | Developers who want a full UI for local agent sessions on their own machine | Teams and developers who want agents running in the cloud, accessible from anywhere |
-| **How you access it** | Browser via `[yourip]:port` | Browser, any IDE, REST API, n8n |
-| **Setup** | `npx @siteboon/claude-code-ui` | No setup required |
-| **Machine needs to stay on** | Yes | No |
-| **Mobile access** | Any browser on your network | Any device, native app coming |
-| **Sessions available** | All sessions auto-discovered from `~/.claude` | All sessions within your cloud environment |
-| **Agents supported** | Claude Code, Cursor CLI, Codex, Gemini CLI | Claude Code, Cursor CLI, Codex, Gemini CLI |
-| **File explorer and Git** | Yes, built into the UI | Yes, built into the UI |
-| **MCP configuration** | Managed via UI, synced with your local `~/.claude` config | Managed via UI |
-| **IDE access** | Your local IDE | Any IDE connected to your cloud environment |
-| **REST API** | Yes | Yes |
-| **n8n node** | No | Yes |
-| **Team sharing** | No | Yes |
-| **Platform cost** | Free, open source | Starts at $7/month |
-
-> Both options use your own AI subscriptions (Claude, Cursor, etc.) — CloudCLI provides the environment, not the AI.
+| | luzedong fork |
+|---|---|
+| **Best for** | Developers who want a shell-first UI for local agent sessions |
+| **How you access it** | Browser via `[yourip]:port` |
+| **Setup** | `npx @luzedong/claude-code-ui` |
+| **Machine needs to stay on** | Yes |
+| **Mobile access** | Any browser on your network |
+| **Sessions available** | Project and session history auto-discovered from local data |
+| **Agents supported** | Claude Code, Cursor CLI, Codex, Gemini CLI |
+| **Files / Git / MCP** | Built into the UI |
+| **Package** | `@luzedong/claude-code-ui` |
 
 ---
 
@@ -146,59 +138,47 @@ To use Claude Code's full functionality, you'll need to manually enable tools:
 
 ## Plugins
 
-CloudCLI has a plugin system that lets you add custom tabs with their own frontend UI and optional Node.js backend. Install plugins from git repos directly in **Settings > Plugins**, or build your own.
+This fork keeps the plugin system, so you can add custom tabs with their own frontend UI and optional Node.js backend. Install plugins from git repos directly in **Settings > Plugins**, or build your own.
 
 ### Available Plugins
 
 | Plugin | Description |
 |---|---|
 | **[Project Stats](https://github.com/cloudcli-ai/cloudcli-plugin-starter)** | Shows file counts, lines of code, file-type breakdown, largest files, and recently modified files for your current project |
-| **[Web Terminal](https://github.com/cloudcli-ai/cloudcli-plugin-terminal)** | Full xterm.js terminal with multi-tab support|
+| **[Web Terminal](https://github.com/cloudcli-ai/cloudcli-plugin-terminal)** | Full xterm.js terminal with multi-tab support |
 
 ### Build Your Own
 
 **[Plugin Starter Template →](https://github.com/cloudcli-ai/cloudcli-plugin-starter)** — fork this repo to create your own plugin. It includes a working example with frontend rendering, live context updates, and RPC communication to a backend server.
 
-**[Plugin Documentation →](https://cloudcli.ai/docs/plugin-overview)** — full guide to the plugin API, manifest format, security model, and more.
-
 ---
+
 ## FAQ
 
 <details>
-<summary>How is this different from Claude Code Remote Control?</summary>
+<summary>What is different in this fork?</summary>
 
-Claude Code Remote Control lets you send messages to a session already running in your local terminal. Your machine has to stay on, your terminal has to stay open, and sessions time out after roughly 10 minutes without a network connection.
+This fork shifts the product toward a shell-first workflow:
 
-CloudCLI UI and CloudCLI Cloud extend Claude Code rather than sit alongside it — your MCP servers, permissions, settings, and sessions are the exact same ones Claude Code uses natively. Nothing is duplicated or managed separately.
-
-Here's what that means in practice:
-
-- **All your sessions, not just one** — CloudCLI UI auto-discovers every session from your `~/.claude` folder. Remote Control only exposes the single active session to make it available in the Claude mobile app.
-- **Your settings are your settings** — MCP servers, tool permissions, and project config you change in CloudCLI UI are written directly to your Claude Code config and take effect immediately, and vice versa.
-- **Works with more agents** — Claude Code, Cursor CLI, Codex, and Gemini CLI, not just Claude Code.
-- **Full UI, not just a chat window** — file explorer, Git integration, MCP management, and a shell terminal are all built in.
-- **CloudCLI Cloud runs in the cloud** — close your laptop, the agent keeps running. No terminal to babysit, no machine to keep awake.
+- shell tabs use provider-aware icons
+- new shell creation is provider-aware
+- each project keeps its own shell workspace
+- sidebar conversation-search remnants have been removed in favor of project/session history
+- npm package and repository links point to the `luzedong` fork
 
 </details>
 
 <details>
-<summary>Do I need to pay for an AI subscription separately?</summary>
+<summary>Can I use it on my phone?</summary>
 
-Yes. CloudCLI provides the environment, not the AI. You bring your own Claude, Cursor, Codex, or Gemini subscription. CloudCLI Cloud starts at $7/month for the hosted environment on top of that.
-
-</details>
-
-<details>
-<summary>Can I use CloudCLI UI on my phone?</summary>
-
-Yes. For self-hosted, run the server on your machine and open `[yourip]:port` in any browser on your network. For CloudCLI Cloud, open it from any device — no VPN, no port forwarding, no setup. A native app is also in the works.
+Yes. Run the server on your machine and open `[yourip]:port` in any browser on your network.
 
 </details>
 
 <details>
 <summary>Will changes I make in the UI affect my local Claude Code setup?</summary>
 
-Yes, for self-hosted. CloudCLI UI reads from and writes to the same `~/.claude` config that Claude Code uses natively. MCP servers you add via the UI show up in Claude Code immediately and vice versa.
+Yes. The app reads from and writes to the same local Claude configuration and project/session data used by your CLI tools.
 
 </details>
 
@@ -206,9 +186,9 @@ Yes, for self-hosted. CloudCLI UI reads from and writes to the same `~/.claude` 
 
 ## Community & Support
 
-- **[Documentation](https://cloudcli.ai/docs)** — installation, configuration, features, and troubleshooting
-- **[Discord](https://discord.gg/buxwujPNRE)** — get help and connect with other users
-- **[GitHub Issues](https://github.com/siteboon/claudecodeui/issues)** — bug reports and feature requests
+- **[GitHub Repository](https://github.com/luzedong/claudecodeui)** — source code and releases
+- **[GitHub Issues](https://github.com/luzedong/claudecodeui/issues)** — bug reports and feature requests
+- **[npm Package](https://www.npmjs.com/package/@luzedong/claude-code-ui)** — installable package
 - **[Contributing Guide](CONTRIBUTING.md)** — how to contribute to the project
 
 ## License
@@ -230,11 +210,7 @@ This project is open source and free to use, modify, and distribute under the GP
 - **[CodeMirror](https://codemirror.net/)** - Advanced code editor
 - **[TaskMaster AI](https://github.com/eyaltoledano/claude-task-master)** *(Optional)* - AI-powered project management and task planning
 
-
-### Sponsors
-- [Siteboon - AI powered website builder](https://siteboon.ai)
----
-
 <div align="center">
-  <strong>Made with care for the Claude Code, Cursor and Codex community.</strong>
+  <strong>Made for the Claude Code, Cursor, Codex, and Gemini CLI community.</strong>
 </div>
+

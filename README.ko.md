@@ -1,18 +1,16 @@
 <div align="center">
-  <img src="public/logo.svg" alt="CloudCLI UI" width="64" height="64">
-  <h1>Cloud CLI (일명 Claude Code UI)</h1>
-  <p><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>, <a href="https://docs.cursor.com/en/cli/overview">Cursor CLI</a>, <a href="https://developers.openai.com/codex">Codex</a>, <a href="https://geminicli.com/">Gemini-CLI</a> 용 데스크톱 및 모바일 UI입니다.<br>로컬 또는 원격에서 실행하여 어디서나 활성 프로젝트와 세션을 확인하세요.</p>
+  <img src="public/logo.svg" alt="Claude Code UI" width="64" height="64">
+  <h1>Claude Code UI (luzedong fork)</h1>
+  <p><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>, <a href="https://docs.cursor.com/en/cli/overview">Cursor CLI</a>, <a href="https://developers.openai.com/codex">Codex</a>, <a href="https://geminicli.com/">Gemini-CLI</a>용 데스크톱 및 모바일 UI입니다.<br>이 포크는 shell-first 워크플로에 맞춰 조정되었으며, 멀티 provider shell, 프로젝트별 shell 기록, 파일, Git, MCP, 모바일 접근을 제공합니다.</p>
 </div>
 
 <p align="center">
-  <a href="https://cloudcli.ai">CloudCLI Cloud</a> · <a href="https://cloudcli.ai/docs">문서</a> · <a href="https://discord.gg/buxwujPNRE">Discord</a> · <a href="https://github.com/siteboon/claudecodeui/issues">버그 신고</a> · <a href="CONTRIBUTING.md">기여 안내</a>
+  <a href="https://github.com/luzedong/claudecodeui">GitHub</a> · <a href="https://github.com/luzedong/claudecodeui/issues">버그 신고</a> · <a href="https://www.npmjs.com/package/@luzedong/claude-code-ui">npm</a> · <a href="CONTRIBUTING.md">기여 안내</a>
 </p>
 
 <p align="center">
-  <a href="https://cloudcli.ai"><img src="https://img.shields.io/badge/☁️_CloudCLI_Cloud-Try_Now-0066FF?style=for-the-badge" alt="CloudCLI Cloud"></a>
-  <a href="https://discord.gg/buxwujPNRE"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord 커뮤니티"></a>
-  <br><br>
-  <a href="https://trendshift.io/repositories/15586" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15586" alt="siteboon%2Fclaudecodeui | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+  <a href="https://www.npmjs.com/package/@luzedong/claude-code-ui"><img src="https://img.shields.io/badge/npm-%40luzedong%2Fclaude--code--ui-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm package"></a>
+  <a href="https://github.com/luzedong/claudecodeui"><img src="https://img.shields.io/badge/GitHub-luzedong%2Fclaudecodeui-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repository"></a>
 </p>
 
 <div align="right"><i><a href="./README.md">English</a> · <a href="./README.ru.md">Русский</a> · <a href="./README.de.md">Deutsch</a> · <b>한국어</b> · <a href="./README.zh-CN.md">中文</a> · <a href="./README.ja.md">日本語</a></i></div>
@@ -29,13 +27,13 @@
 <h3>데스크톱 보기</h3>
 <img src="public/screenshots/desktop-main.png" alt="데스크톱 인터페이스" width="400">
 <br>
-<em>프로젝트 개요와 채팅을 보여주는 메인 인터페이스</em>
+<em>프로젝트 기록, shell 워크스페이스, 파일, Git를 보여주는 메인 화면</em>
 </td>
 <td align="center">
 <h3>모바일 경험</h3>
 <img src="public/screenshots/mobile-chat.png" alt="모바일 인터페이스" width="250">
 <br>
-<em>터치 내비게이션이 포함된 반응형 모바일 디자인</em>
+<em>shell 접근과 프로젝트 탐색에 맞춘 반응형 모바일 레이아웃</em>
 </td>
 </tr>
 <tr>
@@ -43,7 +41,7 @@
 <h3>CLI 선택</h3>
 <img src="public/screenshots/cli-selection.png" alt="CLI 선택" width="400">
 <br>
-<em>Claude Code, Gemini, Cursor CLI 및 Codex 중 선택</em>
+<em>Claude Code, Gemini, Cursor CLI, Codex 중 선택</em>
 </td>
 </tr>
 </table>
@@ -52,71 +50,165 @@
 
 ## 기능
 
-- **반응형 디자인** - 데스크톱, 태블릿, 모바일을 아우르는 매끄러운 경험으로 어디서든 Agents를 사용할 수 있습니다
-- **대화형 채팅 인터페이스** - 내장된 채팅 UI를 통해 에이전트와 자연스럽게 소통
-- **통합 셸 터미널** - 셸 기능을 통해 Agents CLI에 직접 접근
-- **파일 탐색기** - 구문 강조 및 실시간 편집을 갖춘 인터랙티브 파일 트리
-- **Git 탐색기** - 변경 사항 보기, 스테이징 및 커밋. 브랜치 전환 기능 포함
-- **세션 관리** - 대화를 재개하고, 여러 세션을 관리하며 기록을 추적
-- **플러그인 시스템** - 커스텀 탭, 백엔드 서비스, 통합을 추가하여 CloudCLI 확장. [직접 빌드 →](https://github.com/cloudcli-ai/cloudcli-plugin-starter)
-- **TaskMaster AI 통합** *(선택사항)* - AI 중심의 작업 계획, PRD 파싱, 워크플로 자동화를 통한 고급 프로젝트 관리
-- **모델 호환성** - Claude, GPT, Gemini 모델 계열에서 작동 (`shared/modelConstants.js`에서 전체 지원 모델 확인)
+- **Shell-first 워크스페이스** - chat-first 흐름이 아니라 지속되는 shell 세션 중심으로 설계
+- **멀티 provider Shell** - 하나의 UI에서 Claude Code, Codex, Cursor 계열 세션, Gemini CLI, 일반 system shell 실행
+- **프로젝트별 Shell 기록** - 프로젝트를 전환해도 해당 shell 워크스페이스를 복원
+- **Provider 인식 Shell 생성** - 헤더에서 provider별 shell을 바로 만들고 해당 아이콘 표시
+- **반응형 디자인** - 데스크톱, 태블릿, 모바일 지원
+- **파일 탐색기** - 구문 강조와 실시간 편집을 갖춘 인터랙티브 파일 트리
+- **Git 탐색기** - 변경 사항 보기, 스테이징, 커밋, 브랜치 전환
+- **세션 관리** - 사이드바에서 프로젝트와 session 기록 탐색
+- **플러그인 시스템** - 커스텀 탭, 백엔드 서비스, 통합으로 UI 확장. [직접 빌드 →](https://github.com/cloudcli-ai/cloudcli-plugin-starter)
+- **TaskMaster AI 통합** *(선택 사항)* - AI 기반 작업 계획, PRD 파싱, 워크플로 자동화
+- **모델 호환성** - Claude, GPT, Gemini 계열 모델 지원 (`shared/modelConstants.js` 참고)
 
 ## 빠른 시작
 
-### CloudCLI Cloud (추천)
+### 셀프 호스트
 
-가장 빠르게 시작하는 방법 — 로컬 설정 없이도 가능합니다. 웹, 모바일 앱, API 또는 선호하는 IDE에서 이용할 수 있는 완전 관리형 컨테이너화된 개발 환경을 제공합니다.
-
-**[CloudCLI Cloud 시작하기](https://cloudcli.ai)**
-
-### 셀프 호스트 (오픈 소스)
-
-**npx**로 즉시 CloudCLI UI를 실행하세요 (Node.js v22+ 필요):
+이 포크를 **npx**로 바로 실행할 수 있습니다 (**Node.js** v22+ 필요):
 
 ```bash
-npx @siteboon/claude-code-ui
+npx @luzedong/claude-code-ui
 ```
 
-**정기적으로 사용한다면 전역 설치:**
+또는 전역 설치:
 
 ```bash
-npm install -g @siteboon/claude-code-ui
+npm install -g @luzedong/claude-code-ui
 cloudcli
 ```
 
-`http://localhost:3001`을 열면 기존 세션이 자동으로 발견됩니다.
+`http://localhost:3001`을 열면 기존 로컬 프로젝트와 세션이 자동으로 발견됩니다.
 
-자세한 구성 옵션, PM2, 원격 서버 설정 등은 **[문서 →](https://cloudcli.ai/docs)**를 참고하세요
+### 소스에서 실행
+
+```bash
+git clone https://github.com/luzedong/claudecodeui.git
+cd claudecodeui
+npm install
+npm run dev
+```
+
+### 패키지 / 링크
+
+- npm: [`@luzedong/claude-code-ui`](https://www.npmjs.com/package/@luzedong/claude-code-ui)
+- GitHub: [`luzedong/claudecodeui`](https://github.com/luzedong/claudecodeui)
 
 ---
 
-## 어느 옵션이 적합한가요?
+## 누구에게 적합한가요?
 
-CloudCLI UI는 CloudCLI Cloud를 구동하는 오픈 소스 UI 계층입니다. 로컬 머신에서 직접 셀프 호스트하거나, CloudCLI Cloud(완전 관리형 클라우드 환경, 팀 기능, 심화 통합 제공)를 사용할 수 있습니다.
+이 포크는 로컬 CLI 도구 위에 shell-first UI를 원하는 개발자를 위한 버전입니다.
 
-| | CloudCLI UI (셀프 호스트) | CloudCLI Cloud |
-|---|---|---|
-| **적합한 대상** | 로컬 에이전트 세션을 위한 전체 UI가 필요한 개발자 | 어디서든 접근 가능한 클라우드에서 에이전트를 운영하고자 하는 팀 및 개발자 |
-| **접근 방법** | `[yourip]:port`를 통해 브라우저 접속 | 브라우저, IDE, REST API, n8n |
-| **설정** | `npx @siteboon/claude-code-ui` | 설정 불필요 |
-| **기기 유지 필요 여부** | 예 (머신 켜둬야 함) | 아니오 |
-| **모바일 접근** | 네트워크 내 브라우저 | 모든 기기 (네이티브 앱 예정) |
-| **세션 접근** | `~/.claude`에서 자동 발견 | 클라우드 환경 내 세션 |
-| **지원 에이전트** | Claude Code, Cursor CLI, Codex, Gemini CLI | Claude Code, Cursor CLI, Codex, Gemini CLI |
-| **파일 탐색기 및 Git** | UI에 통합됨 | UI에 통합됨 |
-| **MCP 구성** | UI에서 관리, 로컬 `~/.claude` 설정과 동기화됨 | UI에서 관리 |
-| **IDE 접근** | 로컬 IDE | 클라우드 환경에 연결된 모든 IDE |
-| **REST API** | 예 | 예 |
-| **n8n 노드** | 아니오 | 예 |
-| **팀 공유** | 아니오 | 예 |
-| **플랫폼 비용** | 무료, 오픈 소스 | 월 $7부터 |
-
-> 둘 다 자체 AI 구독(Claude, Cursor 등)을 그대로 사용합니다 — CloudCLI는 환경만 제공합니다.
+| | luzedong fork |
+|---|---|
+| **적합한 대상** | 로컬 agent 세션용 shell-first UI가 필요한 개발자 |
+| **접근 방법** | 브라우저에서 `[yourip]:port` 접속 |
+| **설치** | `npx @luzedong/claude-code-ui` |
+| **머신 유지 필요** | 예 |
+| **모바일 접근** | 네트워크 내 브라우저 |
+| **사용 가능한 세션** | 로컬 프로젝트 및 session 기록 자동 발견 |
+| **지원 에이전트** | Claude Code, Cursor CLI, Codex, Gemini CLI |
+| **Files / Git / MCP** | UI 내장 |
+| **패키지명** | `@luzedong/claude-code-ui` |
 
 ---
 
 ## 보안 및 도구 구성
+
+**🔒 중요**: Claude Code 도구는 기본적으로 **비활성화**되어 있습니다. 잠재적으로 위험한 작업이 자동 실행되는 것을 막기 위함입니다.
+
+### 도구 활성화
+
+1. **도구 설정 열기** - 사이드바의 톱니바퀴 아이콘 클릭
+2. **필요한 것만 활성화** - 필요한 도구만 켜기
+3. **설정 저장** - 설정은 로컬에 저장됨
+
+<div align="center">
+
+![Tools Settings Modal](public/screenshots/tools-modal.png)
+*필요한 도구만 활성화할 수 있는 Tools Settings 화면*
+
+</div>
+
+---
+
+## 플러그인
+
+이 포크도 플러그인 시스템을 유지합니다. 자체 프론트엔드 UI와 선택적 Node.js 백엔드를 가진 커스텀 탭을 추가할 수 있습니다. **Settings > Plugins**에서 git 저장소 기반 플러그인을 설치하거나 직접 만들 수 있습니다.
+
+### 사용 가능한 플러그인
+
+| Plugin | Description |
+|---|---|
+| **[Project Stats](https://github.com/cloudcli-ai/cloudcli-plugin-starter)** | 현재 프로젝트의 파일 수, 코드 줄 수, 파일 유형 분포, 가장 큰 파일, 최근 수정 파일 표시 |
+| **[Web Terminal](https://github.com/cloudcli-ai/cloudcli-plugin-terminal)** | 멀티 탭을 지원하는 전체 xterm.js 터미널 |
+
+### 직접 만들기
+
+**[Plugin Starter Template →](https://github.com/cloudcli-ai/cloudcli-plugin-starter)** — 이 저장소를 fork 해서 자신만의 플러그인을 만들 수 있습니다. 프론트엔드 렌더링, 실시간 컨텍스트 업데이트, 백엔드 서버와의 RPC 통신 예제가 포함되어 있습니다.
+
+---
+
+## FAQ
+
+<details>
+<summary>이 포크는 무엇이 다른가요?</summary>
+
+이 포크는 제품의 중심을 shell-first 워크플로로 옮겼습니다.
+
+- shell 탭에 provider별 아이콘 표시
+- 새 shell 생성이 provider-aware
+- 각 프로젝트가 자체 shell 워크스페이스 유지
+- 사이드바의 conversation search 잔재를 제거하고 project/session 기록 중심으로 정리
+- npm 패키지명과 저장소 링크를 `luzedong` 포크 기준으로 변경
+
+</details>
+
+<details>
+<summary>휴대폰에서도 사용할 수 있나요?</summary>
+
+네. 서버를 자신의 머신에서 실행한 뒤, 같은 네트워크의 브라우저에서 `[yourip]:port`를 열면 됩니다.
+
+</details>
+
+<details>
+<summary>UI에서 변경한 내용이 로컬 Claude Code 설정에도 반영되나요?</summary>
+
+네. 이 앱은 CLI 도구가 사용하는 로컬 Claude 설정과 project/session 데이터를 읽고 씁니다.
+
+</details>
+
+---
+
+## 커뮤니티 & 지원
+
+- **[GitHub Repository](https://github.com/luzedong/claudecodeui)** — 소스 코드와 릴리스
+- **[GitHub Issues](https://github.com/luzedong/claudecodeui/issues)** — 버그 신고와 기능 요청
+- **[npm Package](https://www.npmjs.com/package/@luzedong/claude-code-ui)** — 설치 가능한 패키지
+- **[Contributing Guide](CONTRIBUTING.md)** — 기여 방법
+
+## 라이선스
+
+GNU General Public License v3.0 - 자세한 내용은 [LICENSE](LICENSE)를 참고하세요.
+
+## 감사의 말
+
+### Built With
+- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** - Anthropic 공식 CLI
+- **[Cursor CLI](https://docs.cursor.com/en/cli/overview)** - Cursor 공식 CLI
+- **[Codex](https://developers.openai.com/codex)** - OpenAI Codex
+- **[Gemini-CLI](https://geminicli.com/)** - Google Gemini CLI
+- **[React](https://react.dev/)** - UI 라이브러리
+- **[Vite](https://vitejs.dev/)** - 빠른 빌드 도구와 개발 서버
+- **[Tailwind CSS](https://tailwindcss.com/)** - 유틸리티 중심 CSS 프레임워크
+- **[CodeMirror](https://codemirror.net/)** - 고급 코드 에디터
+- **[TaskMaster AI](https://github.com/eyaltoledano/claude-task-master)** *(Optional)* - AI 기반 작업 관리
+
+<div align="center">
+  <strong>Claude Code, Cursor, Codex, Gemini CLI 커뮤니티를 위해.</strong>
+</div>
 
 **🔒 중요 공지**: 모든 Claude Code 도구는 **기본적으로 비활성화**되어 있습니다. 이는 잠재적인 유해 작업이 자동 실행되는 것을 방지하기 위한 조치입니다.
 

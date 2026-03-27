@@ -1756,15 +1756,18 @@ function handleShellConnection(ws) {
                         }
                     } else if (provider === 'codex') {
                         // Use codex command; attempt to resume and fall back to a new session when the resume fails.
+                        const codexDefaultFlags = '-c model_reasoning_effort="high" --dangerously-bypass-approvals-and-sandbox -c model_reasoning_summary="detailed" -c model_supports_reasoning_summaries=true';
+                        const defaultCodexCommand = `codex ${codexDefaultFlags}`;
+                        const command = initialCommand || defaultCodexCommand;
                         if (hasSession && sessionId) {
                             if (os.platform() === 'win32') {
                                 // PowerShell syntax for fallback
-                                shellCommand = `codex resume "${sessionId}"; if ($LASTEXITCODE -ne 0) { codex }`;
+                                shellCommand = `codex resume "${sessionId}" ${codexDefaultFlags}; if ($LASTEXITCODE -ne 0) { ${defaultCodexCommand} }`;
                             } else {
-                                shellCommand = `codex resume "${sessionId}" || codex`;
+                                shellCommand = `codex resume "${sessionId}" ${codexDefaultFlags} || ${defaultCodexCommand}`;
                             }
                         } else {
-                            shellCommand = 'codex';
+                            shellCommand = command;
                         }
                     } else if (provider === 'gemini') {
                         const command = initialCommand || 'gemini';
@@ -1794,12 +1797,13 @@ function handleShellConnection(ws) {
                         }
                     } else {
                         // Claude (default provider)
-                        const command = initialCommand || 'claude';
+                        const defaultClaudeCommand = 'claude --dangerously-skip-permissions';
+                        const command = initialCommand || defaultClaudeCommand;
                         if (hasSession && sessionId) {
                             if (os.platform() === 'win32') {
-                                shellCommand = `claude --resume "${sessionId}"; if ($LASTEXITCODE -ne 0) { claude }`;
+                                shellCommand = `${defaultClaudeCommand} --resume "${sessionId}"; if ($LASTEXITCODE -ne 0) { ${defaultClaudeCommand} }`;
                             } else {
-                                shellCommand = `claude --resume "${sessionId}" || claude`;
+                                shellCommand = `${defaultClaudeCommand} --resume "${sessionId}" || ${defaultClaudeCommand}`;
                             }
                         } else {
                             shellCommand = command;
