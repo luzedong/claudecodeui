@@ -13,38 +13,9 @@
   <a href="https://github.com/luzedong/claudecodeui"><img src="https://img.shields.io/badge/GitHub-luzedong%2Fclaudecodeui-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repository"></a>
 </p>
 
+<div align="right"><i><b>English</b> · <a href="./README.ru.md">Русский</a> · <a href="./README.de.md">Deutsch</a> · <a href="./README.ko.md">한국어</a> · <a href="./README.zh-CN.md">中文</a> · <a href="./README.ja.md">日本語</a></i></div>
+
 ---
-
-## Screenshots
-
-<div align="center">
-
-<table>
-<tr>
-<td align="center">
-<h3>Desktop View</h3>
-<img src="public/screenshots/desktop-main.png" alt="Desktop Interface" width="400">
-<br>
-<em>Main interface with project history, shell workspace, files, and Git</em>
-</td>
-<td align="center">
-<h3>Mobile Experience</h3>
-<img src="public/screenshots/mobile-chat.png" alt="Mobile Interface" width="250">
-<br>
-<em>Responsive mobile layout for shell access and project navigation</em>
-</td>
-</tr>
-<tr>
-<td align="center" colspan="2">
-<h3>CLI Selection</h3>
-<img src="public/screenshots/cli-selection.png" alt="CLI Selection" width="400">
-<br>
-<em>Select between Claude Code, Gemini, Cursor CLI and Codex</em>
-</td>
-</tr>
-</table>
-
-</div>
 
 ## Features
 

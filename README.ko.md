@@ -17,37 +17,6 @@
 
 ---
 
-## 스크린샷
-
-<div align="center">
-
-<table>
-<tr>
-<td align="center">
-<h3>데스크톱 보기</h3>
-<img src="public/screenshots/desktop-main.png" alt="데스크톱 인터페이스" width="400">
-<br>
-<em>프로젝트 기록, shell 워크스페이스, 파일, Git를 보여주는 메인 화면</em>
-</td>
-<td align="center">
-<h3>모바일 경험</h3>
-<img src="public/screenshots/mobile-chat.png" alt="모바일 인터페이스" width="250">
-<br>
-<em>shell 접근과 프로젝트 탐색에 맞춘 반응형 모바일 레이아웃</em>
-</td>
-</tr>
-<tr>
-<td align="center" colspan="2">
-<h3>CLI 선택</h3>
-<img src="public/screenshots/cli-selection.png" alt="CLI 선택" width="400">
-<br>
-<em>Claude Code, Gemini, Cursor CLI, Codex 중 선택</em>
-</td>
-</tr>
-</table>
-
-</div>
-
 ## 기능
 
 - **Shell-first 워크스페이스** - chat-first 흐름이 아니라 지속되는 shell 세션 중심으로 설계

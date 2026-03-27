@@ -17,37 +17,6 @@
 
 ---
 
-## スクリーンショット
-
-<div align="center">
-
-<table>
-<tr>
-<td align="center">
-<h3>デスクトップビュー</h3>
-<img src="public/screenshots/desktop-main.png" alt="デスクトップインターフェース" width="400">
-<br>
-<em>プロジェクト履歴、shell ワークスペース、ファイル、Git を表示するメイン画面</em>
-</td>
-<td align="center">
-<h3>モバイル体験</h3>
-<img src="public/screenshots/mobile-chat.png" alt="モバイルインターフェース" width="250">
-<br>
-<em>shell 操作とプロジェクト移動に適したレスポンシブなモバイルレイアウト</em>
-</td>
-</tr>
-<tr>
-<td align="center" colspan="2">
-<h3>CLI 選択</h3>
-<img src="public/screenshots/cli-selection.png" alt="CLI 選択" width="400">
-<br>
-<em>Claude Code、Gemini、Cursor CLI、Codex から選択</em>
-</td>
-</tr>
-</table>
-
-</div>
-
 ## 機能
 
 - **Shell-first ワークスペース** - chat-first ではなく永続的な shell セッション中心の設計

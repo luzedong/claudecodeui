@@ -17,37 +17,6 @@
 
 ---
 
-## Скриншоты
-
-<div align="center">
-
-<table>
-<tr>
-<td align="center">
-<h3>Версия для десктопа</h3>
-<img src="public/screenshots/desktop-main.png" alt="Desktop Interface" width="400">
-<br>
-<em>Основной интерфейс с историей проектов, shell-рабочим пространством, файлами и Git</em>
-</td>
-<td align="center">
-<h3>Мобильный режим</h3>
-<img src="public/screenshots/mobile-chat.png" alt="Mobile Interface" width="250">
-<br>
-<em>Адаптивный мобильный интерфейс для shell-доступа и навигации по проектам</em>
-</td>
-</tr>
-<tr>
-<td align="center" colspan="2">
-<h3>Выбор CLI</h3>
-<img src="public/screenshots/cli-selection.png" alt="CLI Selection" width="400">
-<br>
-<em>Выбирайте между Claude Code, Gemini, Cursor CLI и Codex</em>
-</td>
-</tr>
-</table>
-
-</div>
-
 ## Возможности
 
 - **Shell-first workspace** — интерфейс построен вокруг постоянных shell-сессий, а не chat-first-сценария

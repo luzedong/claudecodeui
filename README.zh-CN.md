@@ -17,37 +17,6 @@
 
 ---
 
-## 截图
-
-<div align="center">
-
-<table>
-<tr>
-<td align="center">
-<h3>桌面视图</h3>
-<img src="public/screenshots/desktop-main.png" alt="桌面界面" width="400">
-<br>
-<em>主界面展示项目历史、shell 工作区、文件与 Git</em>
-</td>
-<td align="center">
-<h3>移动体验</h3>
-<img src="public/screenshots/mobile-chat.png" alt="移动界面" width="250">
-<br>
-<em>适合 shell 访问与项目导航的响应式移动布局</em>
-</td>
-</tr>
-<tr>
-<td align="center" colspan="2">
-<h3>CLI 选择</h3>
-<img src="public/screenshots/cli-selection.png" alt="CLI 选择" width="400">
-<br>
-<em>在 Claude Code、Gemini、Cursor CLI 与 Codex 之间选择</em>
-</td>
-</tr>
-</table>
-
-</div>
-
 ## 功能
 
 - **Shell-first 工作区** - 围绕持久化 shell 会话，而不是 chat-first 流程

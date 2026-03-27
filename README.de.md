@@ -17,37 +17,6 @@
 
 ---
 
-## Screenshots
-
-<div align="center">
-
-<table>
-<tr>
-<td align="center">
-<h3>Desktop-Ansicht</h3>
-<img src="public/screenshots/desktop-main.png" alt="Desktop-Oberfläche" width="400">
-<br>
-<em>Hauptoberfläche mit Projektverlauf, Shell-Workspace, Dateien und Git</em>
-</td>
-<td align="center">
-<h3>Mobile-Erfahrung</h3>
-<img src="public/screenshots/mobile-chat.png" alt="Mobile-Oberfläche" width="250">
-<br>
-<em>Responsives mobiles Layout für Shell-Zugriff und Projektnavigation</em>
-</td>
-</tr>
-<tr>
-<td align="center" colspan="2">
-<h3>CLI-Auswahl</h3>
-<img src="public/screenshots/cli-selection.png" alt="CLI-Auswahl" width="400">
-<br>
-<em>Wähle zwischen Claude Code, Gemini, Cursor CLI und Codex</em>
-</td>
-</tr>
-</table>
-
-</div>
-
 ## Funktionen
 
 - **Shell-first-Workspace** – Optimiert für persistente Shell-Sitzungen statt eines chat-first-Ablaufs
