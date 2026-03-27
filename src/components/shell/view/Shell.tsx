@@ -15,10 +15,12 @@ import { sendSocketMessage } from '../utils/socket';
 import { getSessionDisplayName } from '../utils/auth';
 import ShellConnectionOverlay from './subcomponents/ShellConnectionOverlay';
 import ShellEmptyState from './subcomponents/ShellEmptyState';
-import ShellHeader from './subcomponents/ShellHeader';
 import ShellMinimalView from './subcomponents/ShellMinimalView';
 import TerminalShortcutsPanel from './subcomponents/TerminalShortcutsPanel';
 
+export type ShellMode = 'system' | 'claude' | 'codex';
+
+// 其他内容保持不变...
 type CliPromptOption = { number: string; label: string };
 
 type ShellProps = {
@@ -30,6 +32,7 @@ type ShellProps = {
   minimal?: boolean;
   autoConnect?: boolean;
   isActive?: boolean;
+  shellProviderOverride?: string | null;
 };
 
 export default function Shell({
@@ -41,12 +44,15 @@ export default function Shell({
   minimal = false,
   autoConnect = false,
   isActive = true,
+  shellProviderOverride = null,
 }: ShellProps) {
   const { t } = useTranslation('chat');
   const [isRestarting, setIsRestarting] = useState(false);
   const [cliPromptOptions, setCliPromptOptions] = useState<CliPromptOption[] | null>(null);
   const promptCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onOutputRef = useRef<(() => void) | null>(null);
+
+  const [autoConnectEnabled, setAutoConnectEnabled] = useState<boolean>(autoConnect);
 
   const {
     terminalContainerRef,
@@ -67,13 +73,13 @@ export default function Shell({
     initialCommand,
     isPlainShell,
     minimal,
-    autoConnect,
+    autoConnect: autoConnectEnabled,
     isRestarting,
     onProcessComplete,
     onOutputRef,
+    shellProviderOverride,
   });
 
-  // Check xterm.js buffer for CLI prompt patterns (❯ N. label)
   const checkBufferForPrompt = useCallback(() => {
     const term = terminalRef.current;
     if (!term) return;
@@ -100,9 +106,6 @@ export default function Shell({
       return;
     }
 
-    // Scan upward from footer collecting numbered options.
-    // Non-matching lines are allowed (multi-line labels, blank separators)
-    // because CLI prompts may wrap options across multiple terminal rows.
     const optMap = new Map<string, string>();
     const optScanStart = Math.max(0, footerIdx - PROMPT_OPTION_SCAN_LINES);
     for (let i = footerIdx - 1; i >= optScanStart; i--) {
@@ -125,25 +128,21 @@ export default function Shell({
     setCliPromptOptions(valid.length >= PROMPT_MIN_OPTIONS ? valid : null);
   }, [terminalRef]);
 
-  // Schedule prompt check after terminal output (debounced)
   const schedulePromptCheck = useCallback(() => {
     if (promptCheckTimer.current) clearTimeout(promptCheckTimer.current);
     promptCheckTimer.current = setTimeout(checkBufferForPrompt, PROMPT_DEBOUNCE_MS);
   }, [checkBufferForPrompt]);
 
-  // Wire up the onOutput callback
   useEffect(() => {
     onOutputRef.current = schedulePromptCheck;
   }, [schedulePromptCheck]);
 
-  // Cleanup prompt check timer on unmount
   useEffect(() => {
     return () => {
       if (promptCheckTimer.current) clearTimeout(promptCheckTimer.current);
     };
   }, []);
 
-  // Clear stale prompt options and cancel pending timer on disconnect
   useEffect(() => {
     if (!isConnected) {
       if (promptCheckTimer.current) {
@@ -191,10 +190,22 @@ export default function Shell({
 
   const handleRestartShell = useCallback(() => {
     setIsRestarting(true);
+    setAutoConnectEnabled(true);
     window.setTimeout(() => {
       setIsRestarting(false);
     }, SHELL_RESTART_DELAY_MS);
   }, []);
+
+  const handleDisconnect = useCallback(() => {
+    setAutoConnectEnabled(false);
+    disconnectFromShell();
+  }, [disconnectFromShell]);
+
+  useEffect(() => {
+    if (selectedSession) {
+      setAutoConnectEnabled(true);
+    }
+  }, [selectedSession?.id]);
 
   if (!selectedProject) {
     return (
@@ -243,29 +254,31 @@ export default function Shell({
       })
     : t('shell.startCli', { projectName: selectedProject.displayName });
 
-  const overlayMode = !isInitialized ? 'loading' : isConnecting ? 'connecting' : !isConnected ? 'connect' : null;
+  const overlayMode = !isInitialized
+    ? 'loading'
+    : isConnecting
+      ? 'connecting'
+      : !isConnected
+        ? 'connect'
+        : null;
   const overlayDescription = overlayMode === 'connecting' ? connectingDescription : readyDescription;
 
+  // 纯终端模式：隐藏头部和连接 overlay，只保留终端本身
+  if (isPlainShell && !selectedSession) {
+    return (
+      <div className="h-full w-full bg-gray-900">
+        <div
+          ref={terminalContainerRef}
+          className="h-full w-full focus:outline-none"
+          style={{ outline: 'none' }}
+        />
+      </div>
+    );
+  }
+
+  // AI Shell：不再渲染头部，只保留终端和 overlay
   return (
     <div className="flex h-full w-full flex-col bg-gray-900">
-      <ShellHeader
-        isConnected={isConnected}
-        isInitialized={isInitialized}
-        isRestarting={isRestarting}
-        hasSession={Boolean(selectedSession)}
-        sessionDisplayNameShort={sessionDisplayNameShort}
-        onDisconnect={disconnectFromShell}
-        onRestart={handleRestartShell}
-        statusNewSessionText={t('shell.status.newSession')}
-        statusInitializingText={t('shell.status.initializing')}
-        statusRestartingText={t('shell.status.restarting')}
-        disconnectLabel={t('shell.actions.disconnect')}
-        disconnectTitle={t('shell.actions.disconnectTitle')}
-        restartLabel={t('shell.actions.restart')}
-        restartTitle={t('shell.actions.restartTitle')}
-        disableRestart={isRestarting || isConnected}
-      />
-
       <div className="relative flex-1 overflow-hidden p-2">
         <div
           ref={terminalContainerRef}
@@ -325,7 +338,6 @@ export default function Shell({
         terminalRef={terminalRef}
         isConnected={isConnected}
       />
-
     </div>
   );
 }

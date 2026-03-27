@@ -147,7 +147,7 @@ function mapCliOptionsToSDK(options = {}) {
   const { sessionId, cwd, toolsSettings, permissionMode } = options;
 
   const sdkOptions = {};
-
+  
   // Map working directory
   if (cwd) {
     sdkOptions.cwd = cwd;

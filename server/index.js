@@ -1656,7 +1656,8 @@ function handleShellConnection(ws) {
                 const commandSuffix = isPlainShell && initialCommand
                     ? `_cmd_${Buffer.from(initialCommand).toString('base64').slice(0, 16)}`
                     : '';
-                ptySessionKey = `${projectPath}_${sessionId || 'default'}${commandSuffix}`;
+                const providerKey = isPlainShell ? 'plain-shell' : provider;
+                ptySessionKey = `${projectPath}_${providerKey}_${sessionId || 'default'}${commandSuffix}`;
 
                 // Kill any existing login session before starting fresh
                 if (isLoginCommand) {
@@ -1743,7 +1744,10 @@ function handleShellConnection(ws) {
                     let shellCommand;
                     if (isPlainShell) {
                         // Plain shell mode - run the initial command in the project directory
-                        shellCommand = initialCommand;
+                        // When no command is provided, start an interactive system shell in the project directory.
+                        shellCommand = initialCommand || (os.platform() === 'win32'
+                            ? (process.env.COMSPEC || 'cmd.exe')
+                            : (process.env.SHELL || 'bash'));
                     } else if (provider === 'cursor') {
                         if (hasSession && sessionId) {
                             shellCommand = `cursor-agent --resume="${sessionId}"`;

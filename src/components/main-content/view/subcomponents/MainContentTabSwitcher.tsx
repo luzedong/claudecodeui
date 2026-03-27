@@ -1,4 +1,3 @@
-import { MessageSquare, Terminal, Folder, GitBranch, ClipboardCheck, type LucideIcon } from 'lucide-react';
 import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, PillBar, Pill } from '../../../../shared/view/ui';
@@ -16,7 +15,6 @@ type BuiltInTab = {
   kind: 'builtin';
   id: AppTab;
   labelKey: string;
-  icon: LucideIcon;
 };
 
 type PluginTab = {
@@ -30,17 +28,15 @@ type PluginTab = {
 type TabDefinition = BuiltInTab | PluginTab;
 
 const BASE_TABS: BuiltInTab[] = [
-  { kind: 'builtin', id: 'chat',  labelKey: 'tabs.chat',  icon: MessageSquare },
-  { kind: 'builtin', id: 'shell', labelKey: 'tabs.shell', icon: Terminal },
-  { kind: 'builtin', id: 'files', labelKey: 'tabs.files', icon: Folder },
-  { kind: 'builtin', id: 'git',   labelKey: 'tabs.git',   icon: GitBranch },
+  { kind: 'builtin', id: 'shell', labelKey: 'tabs.shell' },
+  { kind: 'builtin', id: 'files', labelKey: 'tabs.files' },
+  { kind: 'builtin', id: 'git', labelKey: 'tabs.git' },
 ];
 
 const TASKS_TAB: BuiltInTab = {
   kind: 'builtin',
   id: 'tasks',
   labelKey: 'tabs.tasks',
-  icon: ClipboardCheck,
 };
 
 export default function MainContentTabSwitcher({
@@ -78,16 +74,14 @@ export default function MainContentTabSwitcher({
               onClick={() => setActiveTab(tab.id)}
               className="px-2.5 py-[5px]"
             >
-              {tab.kind === 'builtin' ? (
-                <tab.icon className="h-3.5 w-3.5" strokeWidth={isActive ? 2.2 : 1.8} />
-              ) : (
+              {tab.kind === 'plugin' && (
                 <PluginIcon
                   pluginName={tab.pluginName}
                   iconFile={tab.iconFile}
                   className="flex h-3.5 w-3.5 items-center justify-center [&>svg]:h-full [&>svg]:w-full"
                 />
               )}
-              <span className="hidden lg:inline">{displayLabel}</span>
+              <span>{displayLabel}</span>
             </Pill>
           </Tooltip>
         );

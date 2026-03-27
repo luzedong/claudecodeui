@@ -16,6 +16,7 @@ export function useShellRuntime({
   isRestarting,
   onProcessComplete,
   onOutputRef,
+  shellProviderOverride,
 }: UseShellRuntimeOptions): UseShellRuntimeResult {
   const terminalContainerRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<Terminal | null>(null);
@@ -32,6 +33,7 @@ export function useShellRuntime({
   const onProcessCompleteRef = useRef(onProcessComplete);
   const authUrlRef = useRef('');
   const lastSessionIdRef = useRef<string | null>(selectedSession?.id ?? null);
+  const providerOverrideRef = useRef<string | null | undefined>(shellProviderOverride);
 
   // Keep mutable values in refs so websocket handlers always read current data.
   useEffect(() => {
@@ -40,7 +42,8 @@ export function useShellRuntime({
     initialCommandRef.current = initialCommand;
     isPlainShellRef.current = isPlainShell;
     onProcessCompleteRef.current = onProcessComplete;
-  }, [selectedProject, selectedSession, initialCommand, isPlainShell, onProcessComplete]);
+    providerOverrideRef.current = shellProviderOverride;
+  }, [selectedProject, selectedSession, initialCommand, isPlainShell, onProcessComplete, shellProviderOverride]);
 
   const setCurrentAuthUrl = useCallback((nextAuthUrl: string) => {
     authUrlRef.current = nextAuthUrl;
@@ -120,6 +123,7 @@ export function useShellRuntime({
     clearTerminalScreen,
     setAuthUrl: setCurrentAuthUrl,
     onOutputRef,
+    providerOverrideRef,
   });
 
   useEffect(() => {

@@ -108,7 +108,7 @@ const isUpdateAdditive = (
   );
 };
 
-const VALID_TABS: Set<string> = new Set(['chat', 'files', 'shell', 'git', 'tasks', 'preview']);
+const VALID_TABS: Set<string> = new Set(['shell', 'files', 'git', 'tasks', 'preview']);
 
 const isValidTab = (tab: string): tab is AppTab => {
   return VALID_TABS.has(tab) || tab.startsWith('plugin:');
@@ -123,7 +123,7 @@ const readPersistedTab = (): AppTab => {
   } catch {
     // localStorage unavailable
   }
-  return 'chat';
+  return 'shell';
 };
 
 export function useProjectsState({
@@ -371,10 +371,21 @@ export function useProjectsState({
     }
   }, [sessionId, projects, selectedProject?.name, selectedSession?.id, selectedSession?.__provider]);
 
+  const [shellProviderSelectionOpen, setShellProviderSelectionOpen] = useState(false);
+
+  const openShellProviderSelection = useCallback(() => {
+    setShellProviderSelectionOpen(true);
+  }, []);
+
+  const closeShellProviderSelection = useCallback(() => {
+    setShellProviderSelectionOpen(false);
+  }, []);
+
   const handleProjectSelect = useCallback(
     (project: Project) => {
       setSelectedProject(project);
       setSelectedSession(null);
+      setShellProviderSelectionOpen(false);
       navigate('/');
 
       if (isMobile) {
@@ -389,7 +400,7 @@ export function useProjectsState({
       setSelectedSession(session);
 
       if (activeTab === 'tasks' || activeTab === 'preview') {
-        setActiveTab('chat');
+        setActiveTab('shell');
       }
 
       const provider = localStorage.getItem('selected-provider') || 'claude';
@@ -406,6 +417,7 @@ export function useProjectsState({
         }
       }
 
+      setShellProviderSelectionOpen(false);
       navigate(`/session/${session.id}`);
     },
     [activeTab, isMobile, navigate, selectedProject?.name],
@@ -415,7 +427,8 @@ export function useProjectsState({
     (project: Project) => {
       setSelectedProject(project);
       setSelectedSession(null);
-      setActiveTab('chat');
+      setActiveTab('shell');
+      setShellProviderSelectionOpen(true);
       navigate('/');
 
       if (isMobile) {
@@ -562,6 +575,9 @@ export function useProjectsState({
     fetchProjects,
     refreshProjectsSilently,
     sidebarSharedProps,
+    shellProviderSelectionOpen,
+    closeShellProviderSelection,
+    openShellProviderSelection,
     handleProjectSelect,
     handleSessionSelect,
     handleNewSession,

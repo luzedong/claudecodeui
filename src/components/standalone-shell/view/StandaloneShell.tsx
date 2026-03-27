@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import type { Project, ProjectSession } from '../../../types/app';
-import Shell from '../../shell/view/Shell';
+import type { Project, ProjectSession, SessionProvider } from '../../../types/app';
+import Shell, { type ShellMode } from '../../shell/view/Shell';
 import StandaloneShellEmptyState from './subcomponents/StandaloneShellEmptyState';
 import StandaloneShellHeader from './subcomponents/StandaloneShellHeader';
 
@@ -18,6 +18,7 @@ type StandaloneShellProps = {
   showHeader?: boolean;
   compact?: boolean;
   minimal?: boolean;
+  mode?: ShellMode; // system / claude / codex
 };
 
 export default function StandaloneShell({
@@ -34,6 +35,7 @@ export default function StandaloneShell({
   showHeader = true,
   compact = false,
   minimal = false,
+  mode,
 }: StandaloneShellProps) {
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -54,6 +56,22 @@ export default function StandaloneShell({
     return <StandaloneShellEmptyState className={className} />;
   }
 
+  // 决定 providerOverride：
+  let providerOverride: string | null = null;
+  const sessionProvider = session?.__provider as SessionProvider | undefined;
+
+  if (!shouldUsePlainShell) {
+    if (sessionProvider) {
+      providerOverride = sessionProvider;
+    } else if (mode === 'codex') {
+      providerOverride = 'codex';
+    } else if (mode === 'claude') {
+      providerOverride = 'claude';
+    }
+  } else {
+    providerOverride = 'plain-shell';
+  }
+
   return (
     <div className={`flex h-full w-full flex-col ${className}`}>
       {!minimal && showHeader && title && (
@@ -70,6 +88,7 @@ export default function StandaloneShell({
           onProcessComplete={handleProcessComplete}
           minimal={minimal}
           autoConnect={minimal ? true : autoConnect}
+          shellProviderOverride={providerOverride}
         />
       </div>
     </div>

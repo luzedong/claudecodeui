@@ -25,6 +25,7 @@ type UseShellConnectionOptions = {
   clearTerminalScreen: () => void;
   setAuthUrl: (nextAuthUrl: string) => void;
   onOutputRef?: MutableRefObject<(() => void) | null>;
+  providerOverrideRef?: MutableRefObject<string | null | undefined>; // 新增
 };
 
 type UseShellConnectionResult = {
@@ -50,6 +51,7 @@ export function useShellConnection({
   clearTerminalScreen,
   setAuthUrl,
   onOutputRef,
+  providerOverrideRef,
 }: UseShellConnectionOptions): UseShellConnectionResult {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -142,12 +144,27 @@ export function useShellConnection({
 
             currentFitAddon.fit();
 
+            const hasSession = !isPlainShellRef.current && Boolean(selectedSessionRef.current);
+            const sessionId = isPlainShellRef.current ? null : selectedSessionRef.current?.id || null;
+
+            let provider: string;
+            if (isPlainShellRef.current) {
+              provider = 'plain-shell';
+            } else if (providerOverrideRef?.current) {
+              provider = providerOverrideRef.current;
+            } else {
+              provider =
+                selectedSessionRef.current?.__provider ||
+                localStorage.getItem('selected-provider') ||
+                'claude';
+            }
+
             sendSocketMessage(socket, {
               type: 'init',
               projectPath: currentProject.fullPath || currentProject.path || '',
-              sessionId: isPlainShellRef.current ? null : selectedSessionRef.current?.id || null,
-              hasSession: isPlainShellRef.current ? false : Boolean(selectedSessionRef.current),
-              provider: isPlainShellRef.current ? 'plain-shell' : (selectedSessionRef.current?.__provider || localStorage.getItem('selected-provider') || 'claude'),
+              sessionId,
+              hasSession,
+              provider,
               cols: currentTerminal.cols,
               rows: currentTerminal.rows,
               initialCommand: initialCommandRef.current,

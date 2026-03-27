@@ -1,8 +1,39 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
-import type { MainContentHeaderProps } from '../../types/types';
+import { Plus, Terminal } from 'lucide-react';
+import type { MainContentHeaderProps, ShellInstance } from '../../types/types';
+import SessionProviderLogo from '../../../llm-logo-provider/SessionProviderLogo';
 import MobileMenuButton from './MobileMenuButton';
 import MainContentTabSwitcher from './MainContentTabSwitcher';
 import MainContentTitle from './MainContentTitle';
+
+function getShellDisplayTitle(instance: ShellInstance): string {
+  if (instance.session) {
+    return instance.session.title || instance.session.summary || instance.session.name || '会话';
+  }
+
+  if (instance.mode === 'system') {
+    return 'Shell';
+  }
+
+  return instance.mode === 'codex' ? 'Codex' : 'Claude';
+}
+
+function getShellProvider(instance: ShellInstance): 'claude' | 'codex' | 'cursor' | 'gemini' | 'system' {
+  if (instance.mode === 'system' && !instance.session) {
+    return 'system';
+  }
+
+  const provider = instance.session?.__provider;
+  if (provider === 'codex' || provider === 'cursor' || provider === 'gemini') {
+    return provider;
+  }
+
+  if (instance.mode === 'codex') {
+    return 'codex';
+  }
+
+  return 'claude';
+}
 
 export default function MainContentHeader({
   activeTab,
@@ -12,10 +43,17 @@ export default function MainContentHeader({
   shouldShowTasksTab,
   isMobile,
   onMenuClick,
+  shellInstances,
+  activeShellId,
+  onChangeActiveShell,
+  onCloseShell,
+  onCreateShell,
 }: MainContentHeaderProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const createMenuRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
@@ -33,18 +71,159 @@ export default function MainContentHeader({
     return () => observer.disconnect();
   }, [updateScrollState]);
 
+  useEffect(() => {
+    if (!isCreateMenuOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (createMenuRef.current?.contains(event.target as Node)) {
+        return;
+      }
+      setIsCreateMenuOpen(false);
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsCreateMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isCreateMenuOpen]);
+
   return (
     <div className="pwa-header-safe flex-shrink-0 border-b border-border/60 bg-background px-3 py-1.5 sm:px-4 sm:py-2">
       <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          {isMobile && <MobileMenuButton onMenuClick={onMenuClick} />}
-          <MainContentTitle
-            activeTab={activeTab}
-            selectedProject={selectedProject}
-            selectedSession={selectedSession}
-            shouldShowTasksTab={shouldShowTasksTab}
-          />
-        </div>
+        {activeTab === 'shell' ? (
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            {isMobile && <MobileMenuButton onMenuClick={onMenuClick} />}
+
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
+              {shellInstances.map((instance) => {
+                const isActiveShell = instance.id === activeShellId;
+                const displayTitle = getShellDisplayTitle(instance);
+                const provider = getShellProvider(instance);
+
+                return (
+                  <button
+                    key={instance.id}
+                    type="button"
+                    className={
+                      'group inline-flex h-8 items-center gap-2 rounded-full border px-3 text-sm transition-colors ' +
+                      (isActiveShell
+                        ? 'border-border bg-muted text-foreground'
+                        : 'border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground')
+                    }
+                    onClick={() => onChangeActiveShell(instance.id)}
+                  >
+                    {provider === 'system' ? (
+                      <Terminal className="h-3.5 w-3.5 flex-shrink-0" />
+                    ) : (
+                      <SessionProviderLogo provider={provider} className="h-3.5 w-3.5 flex-shrink-0" />
+                    )}
+                    <span className="max-w-[180px] truncate">{displayTitle}</span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded text-muted-foreground hover:bg-muted-foreground/20 hover:text-foreground"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onCloseShell(instance.id);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          onCloseShell(instance.id);
+                        }
+                      }}
+                    >
+                      ×
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              ref={createMenuRef}
+              className="relative flex-shrink-0"
+              onMouseEnter={() => setIsCreateMenuOpen(true)}
+              onMouseLeave={() => setIsCreateMenuOpen(false)}
+            >
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                onClick={() => setIsCreateMenuOpen((open) => !open)}
+                title="新建终端"
+                aria-haspopup="menu"
+                aria-expanded={isCreateMenuOpen}
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+
+              <div
+                className={
+                  'absolute right-full top-1/2 z-20 mr-2 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border/70 bg-background/95 p-1 shadow-lg backdrop-blur-sm transition-all ' +
+                  (isCreateMenuOpen
+                    ? 'pointer-events-auto translate-x-0 opacity-100'
+                    : 'pointer-events-none translate-x-1 opacity-0')
+                }
+              >
+                <button
+                  type="button"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  onClick={() => {
+                    onCreateShell('claude');
+                    setIsCreateMenuOpen(false);
+                  }}
+                  title="Claude Shell"
+                >
+                  <SessionProviderLogo provider="claude" className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  onClick={() => {
+                    onCreateShell('codex');
+                    setIsCreateMenuOpen(false);
+                  }}
+                  title="Codex Shell"
+                >
+                  <SessionProviderLogo provider="codex" className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  onClick={() => {
+                    onCreateShell('system');
+                    setIsCreateMenuOpen(false);
+                  }}
+                  title="System Shell"
+                >
+                  <Terminal className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            {isMobile && <MobileMenuButton onMenuClick={onMenuClick} />}
+            <MainContentTitle
+              activeTab={activeTab}
+              selectedProject={selectedProject}
+              selectedSession={selectedSession}
+              shouldShowTasksTab={shouldShowTasksTab}
+            />
+          </div>
+        )}
 
         <div className="relative min-w-0 flex-shrink overflow-hidden sm:flex-shrink-0">
           {canScrollLeft && (

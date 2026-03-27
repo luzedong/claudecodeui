@@ -46,6 +46,7 @@ export type UseShellRuntimeOptions = {
   isRestarting: boolean;
   onProcessComplete?: ((exitCode: number) => void) | null;
   onOutputRef?: MutableRefObject<(() => void) | null>;
+  shellProviderOverride?: string | null; // 每个 Shell 实例的 provider 覆盖
 };
 
 export type ShellSharedRefs = {

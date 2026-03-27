@@ -42,6 +42,9 @@ export default function AppContent() {
     openSettings,
     refreshProjectsSilently,
     sidebarSharedProps,
+    shellProviderSelectionOpen,
+    closeShellProviderSelection,
+    openShellProviderSelection,
   } = useProjectsState({
     sessionId,
     navigate,
@@ -181,6 +184,9 @@ export default function AppContent() {
           onNavigateToSession={(targetSessionId: string) => navigate(`/session/${targetSessionId}`)}
           onShowSettings={() => setShowSettings(true)}
           externalMessageUpdate={externalMessageUpdate}
+          shellProviderSelectionOpen={shellProviderSelectionOpen}
+          onShellProviderSelectionDone={closeShellProviderSelection}
+          onShellProviderSelectionOpen={openShellProviderSelection}
         />
       </div>
 
