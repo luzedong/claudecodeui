@@ -1,6 +1,6 @@
 {
-  "name": "@siteboon/claude-code-ui",
-  "version": "1.26.3",
+  "name": "@luzedong/claude-code-ui",
+  "version": "1.26.4",
   "description": "A web-based UI for Claude Code CLI",
   "type": "module",
   "main": "server/index.js",
@@ -15,13 +15,13 @@
     "scripts/",
     "README.md"
   ],
-  "homepage": "https://cloudcli.ai",
+  "homepage": "https://github.com/luzedong/claudecodeui",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/siteboon/claudecodeui.git"
+    "url": "git+https://github.com/luzedong/claudecodeui.git"
   },
   "bugs": {
-    "url": "https://github.com/siteboon/claudecodeui/issues"
+    "url": "https://github.com/luzedong/claudecodeui/issues"
   },
   "scripts": {
     "dev": "concurrently --kill-others \"npm run server\" \"npm run client\"",
