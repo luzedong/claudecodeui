@@ -13,35 +13,35 @@ export type ShellProviderSelectionProps = {
 
 export default function ShellProviderSelection({ onSelect }: ShellProviderSelectionProps) {
   return (
-    <div className="flex h-full items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="mb-6 text-center">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+    <div className="flex h-full items-center justify-center px-6">
+      <div className="w-full max-w-4xl">
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Choose shell type
           </h2>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-2 text-base text-muted-foreground">
             Start a new Claude, Codex, or plain system shell in this project.
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
           {SHELL_PROVIDERS.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => onSelect(p.id as 'claude' | 'codex' | 'system')}
-              className="relative flex flex-col items-center gap-2.5 rounded-xl border-[1.5px] border-border bg-card/60 px-2 pb-4 pt-5 text-center transition-all duration-150 hover:border-border/80 hover:bg-card active:scale-[0.97]"
+              className="relative flex min-h-[220px] flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-card/70 px-6 py-8 text-center transition-all duration-150 hover:border-border/80 hover:bg-card hover:shadow-sm active:scale-[0.98]"
             >
-              <div className="mb-1 flex h-9 w-9 items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60">
                 {p.id === 'system' ? (
-                  <span className="text-base font-mono text-foreground">$</span>
+                  <span className="text-2xl font-mono text-foreground">$</span>
                 ) : (
-                  <SessionProviderLogo provider={p.id as SessionProvider} className="h-7 w-7" />
+                  <SessionProviderLogo provider={p.id as SessionProvider} className="h-10 w-10" />
                 )}
               </div>
               <div className="text-center">
-                <p className="text-[12px] font-semibold leading-none text-foreground">{p.name}</p>
-                <p className="mt-1 text-[10px] leading-tight text-muted-foreground">{p.description}</p>
+                <p className="text-lg font-semibold leading-none text-foreground">{p.name}</p>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{p.description}</p>
               </div>
             </button>
           ))}

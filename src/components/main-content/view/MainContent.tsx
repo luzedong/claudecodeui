@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import FileTree from '../../file-tree/view/FileTree';
 import StandaloneShell from '../../standalone-shell/view/StandaloneShell';
 import GitPanel from '../../git-panel/view/GitPanel';
@@ -95,7 +95,27 @@ function MainContent({
   });
 
   const [shellInstances, setShellInstances] = useState<ShellInstance[]>([]);
-  const [activeShellId, setActiveShellId] = useState<string | null>(null);
+  const [activeShellIdByProject, setActiveShellIdByProject] = useState<Record<string, string | null>>({});
+
+  const currentProjectName = selectedProject?.name ?? null;
+  const visibleShellInstances = useMemo(() => {
+    if (!currentProjectName) {
+      return [];
+    }
+    return shellInstances.filter((instance) => instance.project.name === currentProjectName);
+  }, [currentProjectName, shellInstances]);
+
+  const activeShellId = currentProjectName ? activeShellIdByProject[currentProjectName] ?? null : null;
+
+  const handleChangeActiveShell = useCallback(
+    (id: string) => {
+      if (!currentProjectName) {
+        return;
+      }
+      setActiveShellIdByProject((prev) => ({ ...prev, [currentProjectName]: id }));
+    },
+    [currentProjectName],
+  );
 
   const handleCreateShell = useCallback(
     (mode: ShellMode) => {
@@ -105,7 +125,10 @@ function MainContent({
 
       setShellInstances((prev) => {
         const newInstance = createShellInstance(mode, selectedProject, null, false);
-        setActiveShellId(newInstance.id);
+        setActiveShellIdByProject((activePrev) => ({
+          ...activePrev,
+          [selectedProject.name]: newInstance.id,
+        }));
         return [...prev, newInstance];
       });
 
@@ -126,9 +149,9 @@ function MainContent({
   // Keep TaskMaster's current project in sync with selection.
   useEffect(() => {
     const selectedProjectName = selectedProject?.name;
-    const currentProjectName = currentProject?.name;
+    const currentTaskProjectName = currentProject?.name;
 
-    if (selectedProject && selectedProjectName !== currentProjectName) {
+    if (selectedProject && selectedProjectName !== currentTaskProjectName) {
       setCurrentProject?.(selectedProject);
     }
   }, [selectedProject, currentProject?.name, setCurrentProject]);
@@ -140,36 +163,45 @@ function MainContent({
     }
   }, [shouldShowTasksTab, activeTab, setActiveTab]);
 
-  // When project changes, reset shell instances to a single default shell for that project.
+  // Ensure each project has its own shell set and active shell.
   useEffect(() => {
     if (!selectedProject) {
-      setShellInstances([]);
-      setActiveShellId(null);
       return;
     }
 
     setShellInstances((prev) => {
-      const projectInstances = prev.filter(
-        (instance) => instance.project.name === selectedProject.name,
-      );
-
-      if (projectInstances.length === 0) {
-        const initialInstance = createShellInstance('system', selectedProject, null, false);
-        setActiveShellId(initialInstance.id);
-        return [initialInstance];
+      const projectInstances = prev.filter((instance) => instance.project.name === selectedProject.name);
+      if (projectInstances.length > 0) {
+        return prev;
       }
 
-      // Ensure activeShellId is still valid for this project.
-      setActiveShellId((current) => {
-        if (current && projectInstances.some((instance) => instance.id === current)) {
-          return current;
-        }
-        return projectInstances[0]?.id ?? null;
-      });
-
-      return projectInstances;
+      const initialInstance = createShellInstance('system', selectedProject, null, false);
+      setActiveShellIdByProject((activePrev) => ({
+        ...activePrev,
+        [selectedProject.name]: initialInstance.id,
+      }));
+      return [...prev, initialInstance];
     });
-  }, [selectedProject?.name]);
+  }, [selectedProject]);
+
+  // Restore a valid active shell when returning to a project.
+  useEffect(() => {
+    if (!selectedProject || visibleShellInstances.length === 0) {
+      return;
+    }
+
+    setActiveShellIdByProject((prev) => {
+      const currentActiveId = prev[selectedProject.name];
+      if (currentActiveId && visibleShellInstances.some((instance) => instance.id === currentActiveId)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [selectedProject.name]: visibleShellInstances[0]?.id ?? null,
+      };
+    });
+  }, [selectedProject, visibleShellInstances]);
 
   // When a session is selected from history, create or focus a shell instance for that session.
   useEffect(() => {
@@ -179,44 +211,59 @@ function MainContent({
 
     setShellInstances((prev) => {
       const existing = prev.find(
-        (instance) => instance.session && instance.session.id === selectedSession.id,
+        (instance) =>
+          instance.project.name === selectedProject.name &&
+          instance.session &&
+          instance.session.id === selectedSession.id,
       );
 
       if (existing) {
-        setActiveShellId(existing.id);
+        setActiveShellIdByProject((activePrev) => ({
+          ...activePrev,
+          [selectedProject.name]: existing.id,
+        }));
         return prev;
       }
 
       const mode = getShellModeFromSession(selectedSession);
       const newInstance = createShellInstance(mode, selectedProject, selectedSession, true);
-      setActiveShellId(newInstance.id);
+      setActiveShellIdByProject((activePrev) => ({
+        ...activePrev,
+        [selectedProject.name]: newInstance.id,
+      }));
       return [...prev, newInstance];
     });
-  }, [selectedProject?.name, selectedSession?.id]);
+  }, [selectedProject, selectedSession]);
 
-  const handleCloseShell = useCallback((id: string) => {
-    setShellInstances((prev) => {
-      if (prev.length === 0) return prev;
+  const handleCloseShell = useCallback(
+    (id: string) => {
+      if (!currentProjectName) {
+        return;
+      }
 
-      const index = prev.findIndex((instance) => instance.id === id);
-      if (index === -1) return prev;
+      setShellInstances((prev) => {
+        const currentProjectInstances = prev.filter((instance) => instance.project.name === currentProjectName);
+        const index = currentProjectInstances.findIndex((instance) => instance.id === id);
+        if (index === -1) return prev;
 
-      const nextInstances = [...prev.slice(0, index), ...prev.slice(index + 1)];
+        const nextProjectInstances = [
+          ...currentProjectInstances.slice(0, index),
+          ...currentProjectInstances.slice(index + 1),
+        ];
 
-      setActiveShellId((current) => {
-        if (current !== id) {
-          return current;
-        }
-        if (nextInstances.length === 0) {
-          return null;
-        }
-        const fallback = nextInstances[Math.min(index, nextInstances.length - 1)];
-        return fallback.id;
+        setActiveShellIdByProject((activePrev) => ({
+          ...activePrev,
+          [currentProjectName]:
+            activePrev[currentProjectName] !== id
+              ? activePrev[currentProjectName] ?? null
+              : nextProjectInstances[Math.min(index, nextProjectInstances.length - 1)]?.id ?? null,
+        }));
+
+        return prev.filter((instance) => instance.id !== id);
       });
-
-      return nextInstances;
-    });
-  }, []);
+    },
+    [currentProjectName],
+  );
 
   if (isLoading) {
     return <MainContentStateView mode="loading" isMobile={isMobile} onMenuClick={onMenuClick} />;
@@ -236,9 +283,9 @@ function MainContent({
         shouldShowTasksTab={shouldShowTasksTab}
         isMobile={isMobile}
         onMenuClick={onMenuClick}
-        shellInstances={shellInstances}
+        shellInstances={visibleShellInstances}
         activeShellId={activeShellId}
-        onChangeActiveShell={setActiveShellId}
+        onChangeActiveShell={handleChangeActiveShell}
         onCloseShell={handleCloseShell}
         onCreateShell={handleCreateShell}
       />
@@ -267,7 +314,7 @@ function MainContent({
 
                 {!shellProviderSelectionOpen && (
                   <div className="relative h-full w-full overflow-hidden">
-                    {shellInstances.map((instance) => {
+                    {visibleShellInstances.map((instance) => {
                       const isActiveShell = instance.id === activeShellId;
                       return (
                         <div
