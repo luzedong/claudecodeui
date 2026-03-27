@@ -197,6 +197,24 @@
       "title": "选择项目",
       "description": "选择一个项目以在该目录中打开交互式 Shell"
     },
+    "providerSelection": {
+      "title": "选择 Shell 类型",
+      "description": "在当前项目中启动新的 Claude、Codex 或系统 Shell。",
+      "providers": {
+        "claude": {
+          "name": "Claude Shell",
+          "description": "使用 Claude CLI，并提供完整代码工具能力"
+        },
+        "codex": {
+          "name": "Codex Shell",
+          "description": "使用 Codex CLI 进行代码生成"
+        },
+        "system": {
+          "name": "系统 Shell",
+          "description": "在项目目录中打开普通系统终端"
+        }
+      }
+    },
     "status": {
       "newSession": "新会话",
       "initializing": "初始化中...",

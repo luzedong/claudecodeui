@@ -188,6 +188,24 @@
       "title": "プロジェクトを選択",
       "description": "プロジェクトを選択してそのディレクトリでシェルを開きます"
     },
+    "providerSelection": {
+      "title": "Shell の種類を選択",
+      "description": "このプロジェクトで新しい Claude、Codex、またはシステム Shell を開始します。",
+      "providers": {
+        "claude": {
+          "name": "Claude Shell",
+          "description": "Claude CLI をフルコードツール付きで使用します"
+        },
+        "codex": {
+          "name": "Codex Shell",
+          "description": "コード生成に Codex CLI を使用します"
+        },
+        "system": {
+          "name": "System Shell",
+          "description": "プロジェクトディレクトリで通常のシステム端末を開きます"
+        }
+      }
+    },
     "status": {
       "newSession": "新しいセッション",
       "initializing": "初期化中...",

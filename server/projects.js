@@ -382,251 +382,128 @@ async function extractProjectDirectory(projectName) {
 }
 
 async function getProjects(progressCallback = null) {
-  const claudeDir = path.join(os.homedir(), '.claude', 'projects');
   const config = await loadProjectConfig();
   const projects = [];
-  const existingProjects = new Set();
   const codexSessionsIndexRef = { sessionsByProject: null };
-  let totalProjects = 0;
+  const manualProjects = Object.entries(config).filter(([, cfg]) => cfg?.manuallyAdded);
+  const totalProjects = manualProjects.length;
   let processedProjects = 0;
-  let directories = [];
+  for (const [projectName, projectConfig] of manualProjects) {
+    processedProjects++;
 
-  try {
-    // Check if the .claude/projects directory exists
-    await fs.access(claudeDir);
-
-    // First, get existing Claude projects from the file system
-    const entries = await fs.readdir(claudeDir, { withFileTypes: true });
-    directories = entries.filter(e => e.isDirectory());
-
-    // Build set of existing project names for later
-    directories.forEach(e => existingProjects.add(e.name));
-
-    // Count manual projects not already in directories
-    const manualProjectsCount = Object.entries(config)
-      .filter(([name, cfg]) => cfg.manuallyAdded && !existingProjects.has(name))
-      .length;
-
-    totalProjects = directories.length + manualProjectsCount;
-
-    for (const entry of directories) {
-      processedProjects++;
-
-      // Emit progress
-      if (progressCallback) {
-        progressCallback({
-          phase: 'loading',
-          current: processedProjects,
-          total: totalProjects,
-          currentProject: entry.name
-        });
-      }
-
-      // Extract actual project directory from JSONL sessions
-      const actualProjectDir = await extractProjectDirectory(entry.name);
-
-      // Get display name from config or generate one
-      const customName = config[entry.name]?.displayName;
-      const autoDisplayName = await generateDisplayName(entry.name, actualProjectDir);
-      const fullPath = actualProjectDir;
-
-      const project = {
-        name: entry.name,
-        path: actualProjectDir,
-        displayName: customName || autoDisplayName,
-        fullPath: fullPath,
-        isCustomName: !!customName,
-        sessions: [],
-        geminiSessions: [],
-        sessionMeta: {
-          hasMore: false,
-          total: 0
-        }
-      };
-
-      // Try to get sessions for this project (just first 5 for performance)
-      try {
-        const sessionResult = await getSessions(entry.name, 5, 0);
-        project.sessions = sessionResult.sessions || [];
-        project.sessionMeta = {
-          hasMore: sessionResult.hasMore,
-          total: sessionResult.total
-        };
-      } catch (e) {
-        console.warn(`Could not load sessions for project ${entry.name}:`, e.message);
-        project.sessionMeta = {
-          hasMore: false,
-          total: 0
-        };
-      }
-      applyCustomSessionNames(project.sessions, 'claude');
-
-      // Also fetch Cursor sessions for this project
-      try {
-        project.cursorSessions = await getCursorSessions(actualProjectDir);
-      } catch (e) {
-        console.warn(`Could not load Cursor sessions for project ${entry.name}:`, e.message);
-        project.cursorSessions = [];
-      }
-      applyCustomSessionNames(project.cursorSessions, 'cursor');
-
-      // Also fetch Codex sessions for this project
-      try {
-        project.codexSessions = await getCodexSessions(actualProjectDir, {
-          indexRef: codexSessionsIndexRef,
-        });
-      } catch (e) {
-        console.warn(`Could not load Codex sessions for project ${entry.name}:`, e.message);
-        project.codexSessions = [];
-      }
-      applyCustomSessionNames(project.codexSessions, 'codex');
-
-      // Also fetch Gemini sessions for this project (UI + CLI)
-      try {
-        const uiSessions = sessionManager.getProjectSessions(actualProjectDir) || [];
-        const cliSessions = await getGeminiCliSessions(actualProjectDir);
-        const uiIds = new Set(uiSessions.map(s => s.id));
-        const mergedGemini = [...uiSessions, ...cliSessions.filter(s => !uiIds.has(s.id))];
-        project.geminiSessions = mergedGemini;
-      } catch (e) {
-        console.warn(`Could not load Gemini sessions for project ${entry.name}:`, e.message);
-        project.geminiSessions = [];
-      }
-      applyCustomSessionNames(project.geminiSessions, 'gemini');
-
-      // Add TaskMaster detection
-      try {
-        const taskMasterResult = await detectTaskMasterFolder(actualProjectDir);
-        project.taskmaster = {
-          hasTaskmaster: taskMasterResult.hasTaskmaster,
-          hasEssentialFiles: taskMasterResult.hasEssentialFiles,
-          metadata: taskMasterResult.metadata,
-          status: taskMasterResult.hasTaskmaster && taskMasterResult.hasEssentialFiles ? 'configured' : 'not-configured'
-        };
-      } catch (e) {
-        console.warn(`Could not detect TaskMaster for project ${entry.name}:`, e.message);
-        project.taskmaster = {
-          hasTaskmaster: false,
-          hasEssentialFiles: false,
-          metadata: null,
-          status: 'error'
-        };
-      }
-
-      projects.push(project);
+    // Emit progress for manually added projects only
+    if (progressCallback) {
+      progressCallback({
+        phase: 'loading',
+        current: processedProjects,
+        total: totalProjects,
+        currentProject: projectName
+      });
     }
-  } catch (error) {
-    // If the directory doesn't exist (ENOENT), that's okay - just continue with empty projects
-    if (error.code !== 'ENOENT') {
-      console.error('Error reading projects directory:', error);
-    }
-    // Calculate total for manual projects only (no directories exist)
-    totalProjects = Object.entries(config)
-      .filter(([name, cfg]) => cfg.manuallyAdded)
-      .length;
-  }
 
-  // Add manually configured projects that don't exist as folders yet
-  for (const [projectName, projectConfig] of Object.entries(config)) {
-    if (!existingProjects.has(projectName) && projectConfig.manuallyAdded) {
-      processedProjects++;
+    // Use the original path if available, otherwise extract from potential sessions
+    let actualProjectDir = projectConfig.originalPath;
 
-      // Emit progress for manual projects
-      if (progressCallback) {
-        progressCallback({
-          phase: 'loading',
-          current: processedProjects,
-          total: totalProjects,
-          currentProject: projectName
-        });
-      }
-
-      // Use the original path if available, otherwise extract from potential sessions
-      let actualProjectDir = projectConfig.originalPath;
-
-      if (!actualProjectDir) {
-        try {
-          actualProjectDir = await extractProjectDirectory(projectName);
-        } catch (error) {
-          // Fall back to decoded project name
-          actualProjectDir = projectName.replace(/-/g, '/');
-        }
-      }
-
-      const project = {
-        name: projectName,
-        path: actualProjectDir,
-        displayName: projectConfig.displayName || await generateDisplayName(projectName, actualProjectDir),
-        fullPath: actualProjectDir,
-        isCustomName: !!projectConfig.displayName,
-        isManuallyAdded: true,
-        sessions: [],
-        geminiSessions: [],
-        sessionMeta: {
-          hasMore: false,
-          total: 0
-        },
-        cursorSessions: [],
-        codexSessions: []
-      };
-
-      // Try to fetch Cursor sessions for manual projects too
+    if (!actualProjectDir) {
       try {
-        project.cursorSessions = await getCursorSessions(actualProjectDir);
-      } catch (e) {
-        console.warn(`Could not load Cursor sessions for manual project ${projectName}:`, e.message);
-      }
-      applyCustomSessionNames(project.cursorSessions, 'cursor');
-
-      // Try to fetch Codex sessions for manual projects too
-      try {
-        project.codexSessions = await getCodexSessions(actualProjectDir, {
-          indexRef: codexSessionsIndexRef,
-        });
-      } catch (e) {
-        console.warn(`Could not load Codex sessions for manual project ${projectName}:`, e.message);
-      }
-      applyCustomSessionNames(project.codexSessions, 'codex');
-
-      // Try to fetch Gemini sessions for manual projects too (UI + CLI)
-      try {
-        const uiSessions = sessionManager.getProjectSessions(actualProjectDir) || [];
-        const cliSessions = await getGeminiCliSessions(actualProjectDir);
-        const uiIds = new Set(uiSessions.map(s => s.id));
-        project.geminiSessions = [...uiSessions, ...cliSessions.filter(s => !uiIds.has(s.id))];
-      } catch (e) {
-        console.warn(`Could not load Gemini sessions for manual project ${projectName}:`, e.message);
-      }
-      applyCustomSessionNames(project.geminiSessions, 'gemini');
-
-      // Add TaskMaster detection for manual projects
-      try {
-        const taskMasterResult = await detectTaskMasterFolder(actualProjectDir);
-
-        // Determine TaskMaster status
-        let taskMasterStatus = 'not-configured';
-        if (taskMasterResult.hasTaskmaster && taskMasterResult.hasEssentialFiles) {
-          taskMasterStatus = 'taskmaster-only'; // We don't check MCP for manual projects in bulk
-        }
-
-        project.taskmaster = {
-          status: taskMasterStatus,
-          hasTaskmaster: taskMasterResult.hasTaskmaster,
-          hasEssentialFiles: taskMasterResult.hasEssentialFiles,
-          metadata: taskMasterResult.metadata
-        };
+        actualProjectDir = await extractProjectDirectory(projectName);
       } catch (error) {
-        console.warn(`TaskMaster detection failed for manual project ${projectName}:`, error.message);
-        project.taskmaster = {
-          status: 'error',
-          hasTaskmaster: false,
-          hasEssentialFiles: false,
-          error: error.message
-        };
+        // Fall back to decoded project name
+        actualProjectDir = projectName.replace(/-/g, '/');
+      }
+    }
+
+    const project = {
+      name: projectName,
+      path: actualProjectDir,
+      displayName: projectConfig.displayName || await generateDisplayName(projectName, actualProjectDir),
+      fullPath: actualProjectDir,
+      isCustomName: !!projectConfig.displayName,
+      isManuallyAdded: true,
+      sessions: [],
+      geminiSessions: [],
+      sessionMeta: {
+        hasMore: false,
+        total: 0
+      },
+      cursorSessions: [],
+      codexSessions: []
+    };
+
+    // Load Claude sessions only if this manually-added project has existing records.
+    try {
+      const claudeProjectDir = path.join(os.homedir(), '.claude', 'projects', projectName);
+      await fs.access(claudeProjectDir);
+      const sessionResult = await getSessions(projectName, 5, 0);
+      project.sessions = sessionResult.sessions || [];
+      project.sessionMeta = {
+        hasMore: sessionResult.hasMore,
+        total: sessionResult.total
+      };
+    } catch (_) {
+      project.sessionMeta = {
+        hasMore: false,
+        total: 0
+      };
+    }
+    applyCustomSessionNames(project.sessions, 'claude');
+
+    // Try to fetch Cursor sessions for manual projects too
+    try {
+      project.cursorSessions = await getCursorSessions(actualProjectDir);
+    } catch (e) {
+      console.warn(`Could not load Cursor sessions for manual project ${projectName}:`, e.message);
+    }
+    applyCustomSessionNames(project.cursorSessions, 'cursor');
+
+    // Try to fetch Codex sessions for manual projects too
+    try {
+      project.codexSessions = await getCodexSessions(actualProjectDir, {
+        indexRef: codexSessionsIndexRef,
+      });
+    } catch (e) {
+      console.warn(`Could not load Codex sessions for manual project ${projectName}:`, e.message);
+    }
+    applyCustomSessionNames(project.codexSessions, 'codex');
+
+    // Try to fetch Gemini sessions for manual projects too (UI + CLI)
+    try {
+      const uiSessions = sessionManager.getProjectSessions(actualProjectDir) || [];
+      const cliSessions = await getGeminiCliSessions(actualProjectDir);
+      const uiIds = new Set(uiSessions.map(s => s.id));
+      project.geminiSessions = [...uiSessions, ...cliSessions.filter(s => !uiIds.has(s.id))];
+    } catch (e) {
+      console.warn(`Could not load Gemini sessions for manual project ${projectName}:`, e.message);
+    }
+    applyCustomSessionNames(project.geminiSessions, 'gemini');
+
+    // Add TaskMaster detection for manual projects
+    try {
+      const taskMasterResult = await detectTaskMasterFolder(actualProjectDir);
+
+      // Determine TaskMaster status
+      let taskMasterStatus = 'not-configured';
+      if (taskMasterResult.hasTaskmaster && taskMasterResult.hasEssentialFiles) {
+        taskMasterStatus = 'taskmaster-only'; // We don't check MCP for manual projects in bulk
       }
 
-      projects.push(project);
+      project.taskmaster = {
+        status: taskMasterStatus,
+        hasTaskmaster: taskMasterResult.hasTaskmaster,
+        hasEssentialFiles: taskMasterResult.hasEssentialFiles,
+        metadata: taskMasterResult.metadata
+      };
+    } catch (error) {
+      console.warn(`TaskMaster detection failed for manual project ${projectName}:`, error.message);
+      project.taskmaster = {
+        status: 'error',
+        hasTaskmaster: false,
+        hasEssentialFiles: false,
+        error: error.message
+      };
     }
+
+    projects.push(project);
   }
 
   // Emit completion after all projects (including manual) are processed

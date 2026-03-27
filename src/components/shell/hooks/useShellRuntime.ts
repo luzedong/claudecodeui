@@ -99,6 +99,7 @@ export function useShellRuntime({
     fitAddonRef,
     wsRef,
     selectedProject,
+    selectedSessionId: selectedSession?.id ?? null,
     minimal,
     isRestarting,
     initialCommandRef,

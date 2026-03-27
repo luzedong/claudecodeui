@@ -90,7 +90,7 @@ export default function AppContent() {
         localStorage.setItem('selected-provider', message.provider);
       }
 
-      setActiveTab('chat');
+      setActiveTab('shell');
       setSidebarOpen(false);
       void refreshProjectsSilently();
 

@@ -266,7 +266,7 @@ export default function Shell({
   // 纯终端模式：隐藏头部和连接 overlay，只保留终端本身
   if (isPlainShell && !selectedSession) {
     return (
-      <div className="h-full w-full bg-gray-900">
+      <div className="h-full w-full bg-background">
         <div
           ref={terminalContainerRef}
           className="h-full w-full focus:outline-none"
@@ -278,7 +278,7 @@ export default function Shell({
 
   // AI Shell：不再渲染头部，只保留终端和 overlay
   return (
-    <div className="flex h-full w-full flex-col bg-gray-900">
+    <div className="flex h-full w-full flex-col bg-background">
       <div className="relative flex-1 overflow-hidden p-2">
         <div
           ref={terminalContainerRef}
@@ -300,7 +300,7 @@ export default function Shell({
 
         {cliPromptOptions && isConnected && (
           <div
-            className="absolute inset-x-0 bottom-0 z-10 border-t border-gray-700/80 bg-gray-800/95 px-3 py-2 backdrop-blur-sm"
+            className="absolute inset-x-0 bottom-0 z-10 border-t border-border/80 bg-card/95 px-3 py-2 backdrop-blur-sm"
             onMouseDown={(e) => e.preventDefault()}
           >
             <div className="flex flex-wrap items-center gap-2">
@@ -324,7 +324,7 @@ export default function Shell({
                   sendInput('\x1b');
                   setCliPromptOptions(null);
                 }}
-                className="rounded bg-gray-700 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-600"
+                className="rounded bg-muted px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
               >
                 Esc
               </button>

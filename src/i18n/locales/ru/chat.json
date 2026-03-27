@@ -215,6 +215,24 @@
       "title": "Выберите проект",
       "description": "Выберите проект для открытия интерактивной оболочки в этом каталоге"
     },
+    "providerSelection": {
+      "title": "Выберите тип Shell",
+      "description": "Запустите новый Claude, Codex или системный Shell в этом проекте.",
+      "providers": {
+        "claude": {
+          "name": "Claude Shell",
+          "description": "Использовать Claude CLI с полным набором инструментов для кода"
+        },
+        "codex": {
+          "name": "Codex Shell",
+          "description": "Использовать Codex CLI для генерации кода"
+        },
+        "system": {
+          "name": "System Shell",
+          "description": "Обычный системный терминал в каталоге проекта"
+        }
+      }
+    },
     "status": {
       "newSession": "Новый сеанс",
       "initializing": "Инициализация...",

@@ -96,6 +96,7 @@ function MainContent({
 
   const [shellInstances, setShellInstances] = useState<ShellInstance[]>([]);
   const [activeShellIdByProject, setActiveShellIdByProject] = useState<Record<string, string | null>>({});
+  const [lastAutoFocusSessionKey, setLastAutoFocusSessionKey] = useState<string | null>(null);
 
   const currentProjectName = selectedProject?.name ?? null;
   const visibleShellInstances = useMemo(() => {
@@ -206,6 +207,12 @@ function MainContent({
   // When a session is selected from history, create or focus a shell instance for that session.
   useEffect(() => {
     if (!selectedProject || !selectedSession) {
+      setLastAutoFocusSessionKey(null);
+      return;
+    }
+
+    const sessionKey = `${selectedProject.name}:${selectedSession.id}:${selectedSession.__provider || 'claude'}`;
+    if (lastAutoFocusSessionKey === sessionKey) {
       return;
     }
 
@@ -233,7 +240,15 @@ function MainContent({
       }));
       return [...prev, newInstance];
     });
-  }, [selectedProject, selectedSession]);
+    setLastAutoFocusSessionKey(sessionKey);
+  }, [
+    lastAutoFocusSessionKey,
+    selectedProject,
+    selectedSession,
+    selectedProject?.name,
+    selectedSession?.id,
+    selectedSession?.__provider,
+  ]);
 
   const handleCloseShell = useCallback(
     (id: string) => {

@@ -60,12 +60,6 @@ function Sidebar({
     editingSession,
     editingSessionName,
     searchFilter,
-    searchMode,
-    setSearchMode,
-    conversationResults,
-    isSearching,
-    searchProgress,
-    clearConversationResults,
     deletingProjects,
     deleteConfirmation,
     sessionDeleteConfirmation,
@@ -226,37 +220,6 @@ function Sidebar({
             searchFilter={searchFilter}
             onSearchFilterChange={setSearchFilter}
             onClearSearchFilter={() => setSearchFilter('')}
-            searchMode={searchMode}
-            onSearchModeChange={(mode: 'projects' | 'conversations') => {
-              setSearchMode(mode);
-              if (mode === 'projects') clearConversationResults();
-            }}
-            conversationResults={conversationResults}
-            isSearching={isSearching}
-            searchProgress={searchProgress}
-            onConversationResultClick={(projectName: string, sessionId: string, provider: string, messageTimestamp?: string | null, messageSnippet?: string | null) => {
-              const resolvedProvider = (provider || 'claude') as SessionProvider;
-              const project = projects.find(p => p.name === projectName);
-              const searchTarget = { __searchTargetTimestamp: messageTimestamp || null, __searchTargetSnippet: messageSnippet || null };
-              const sessionObj = {
-                id: sessionId,
-                __provider: resolvedProvider,
-                __projectName: projectName,
-                ...searchTarget,
-              };
-              if (project) {
-                handleProjectSelect(project);
-                const sessions = getProjectSessions(project);
-                const existing = sessions.find(s => s.id === sessionId);
-                if (existing) {
-                  handleSessionClick({ ...existing, ...searchTarget }, projectName);
-                } else {
-                  handleSessionClick(sessionObj, projectName);
-                }
-              } else {
-                handleSessionClick(sessionObj, projectName);
-              }
-            }}
             onRefresh={() => {
               void refreshProjects();
             }}

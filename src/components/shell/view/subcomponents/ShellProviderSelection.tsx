@@ -1,10 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import type { SessionProvider } from '../../../../types/app';
 import SessionProviderLogo from '../../../llm-logo-provider/SessionProviderLogo';
 
-const SHELL_PROVIDERS: { id: SessionProvider | 'system'; name: string; description: string }[] = [
-  { id: 'claude', name: 'Claude Shell', description: 'Use Claude CLI with full code tools' },
-  { id: 'codex', name: 'Codex Shell', description: 'Use Codex CLI for code generation' },
-  { id: 'system', name: 'System Shell', description: 'Plain system terminal in project directory' },
+const SHELL_PROVIDERS: Array<{ id: SessionProvider | 'system' }> = [
+  { id: 'claude' },
+  { id: 'codex' },
+  { id: 'system' },
 ];
 
 export type ShellProviderSelectionProps = {
@@ -12,15 +13,17 @@ export type ShellProviderSelectionProps = {
 };
 
 export default function ShellProviderSelection({ onSelect }: ShellProviderSelectionProps) {
+  const { t } = useTranslation('chat');
+
   return (
     <div className="flex h-full items-center justify-center px-6">
       <div className="w-full max-w-4xl">
         <div className="mb-10 text-center">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            Choose shell type
+            {t('shell.providerSelection.title')}
           </h2>
           <p className="mt-2 text-base text-muted-foreground">
-            Start a new Claude, Codex, or plain system shell in this project.
+            {t('shell.providerSelection.description')}
           </p>
         </div>
 
@@ -40,8 +43,12 @@ export default function ShellProviderSelection({ onSelect }: ShellProviderSelect
                 )}
               </div>
               <div className="text-center">
-                <p className="text-lg font-semibold leading-none text-foreground">{p.name}</p>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{p.description}</p>
+                <p className="text-lg font-semibold leading-none text-foreground">
+                  {t(`shell.providerSelection.providers.${p.id}.name`)}
+                </p>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  {t(`shell.providerSelection.providers.${p.id}.description`)}
+                </p>
               </div>
             </button>
           ))}

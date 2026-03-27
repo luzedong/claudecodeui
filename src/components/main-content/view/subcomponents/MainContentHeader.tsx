@@ -51,6 +51,7 @@ export default function MainContentHeader({
 }: MainContentHeaderProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const createMenuRef = useRef<HTMLDivElement>(null);
+  const closeCreateMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
@@ -98,14 +99,48 @@ export default function MainContentHeader({
     };
   }, [isCreateMenuOpen]);
 
+  useEffect(() => {
+    return () => {
+      if (closeCreateMenuTimerRef.current) {
+        clearTimeout(closeCreateMenuTimerRef.current);
+        closeCreateMenuTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  const clearCloseCreateMenuTimer = useCallback(() => {
+    if (closeCreateMenuTimerRef.current) {
+      clearTimeout(closeCreateMenuTimerRef.current);
+      closeCreateMenuTimerRef.current = null;
+    }
+  }, []);
+
+  const openCreateMenu = useCallback(() => {
+    clearCloseCreateMenuTimer();
+    setIsCreateMenuOpen(true);
+  }, [clearCloseCreateMenuTimer]);
+
+  const scheduleCloseCreateMenu = useCallback(() => {
+    clearCloseCreateMenuTimer();
+    closeCreateMenuTimerRef.current = setTimeout(() => {
+      setIsCreateMenuOpen(false);
+      closeCreateMenuTimerRef.current = null;
+    }, 120);
+  }, [clearCloseCreateMenuTimer]);
+
   return (
     <div className="pwa-header-safe flex-shrink-0 border-b border-border/60 bg-background px-3 py-1.5 sm:px-4 sm:py-2">
       <div className="flex items-center justify-between gap-3">
         {activeTab === 'shell' ? (
-          <div className="flex min-w-0 flex-1 items-center gap-2">
+          <div className="relative z-10 flex min-w-0 flex-1 items-center gap-2">
             {isMobile && <MobileMenuButton onMenuClick={onMenuClick} />}
 
-            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
+            <div
+              className={
+                'flex min-w-0 flex-1 items-center gap-2 ' +
+                (isCreateMenuOpen ? 'overflow-visible' : 'overflow-x-auto')
+              }
+            >
               {shellInstances.map((instance) => {
                 const isActiveShell = instance.id === activeShellId;
                 const displayTitle = getShellDisplayTitle(instance);
@@ -150,66 +185,68 @@ export default function MainContentHeader({
                   </button>
                 );
               })}
-            </div>
-
-            <div
-              ref={createMenuRef}
-              className="relative flex-shrink-0"
-              onMouseEnter={() => setIsCreateMenuOpen(true)}
-              onMouseLeave={() => setIsCreateMenuOpen(false)}
-            >
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                onClick={() => setIsCreateMenuOpen((open) => !open)}
-                title="新建终端"
-                aria-haspopup="menu"
-                aria-expanded={isCreateMenuOpen}
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-
               <div
-                className={
-                  'absolute right-full top-1/2 z-20 mr-2 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border/70 bg-background/95 p-1 shadow-lg backdrop-blur-sm transition-all ' +
-                  (isCreateMenuOpen
-                    ? 'pointer-events-auto translate-x-0 opacity-100'
-                    : 'pointer-events-none translate-x-1 opacity-0')
-                }
+                ref={createMenuRef}
+                className="relative flex-shrink-0"
+                onMouseEnter={openCreateMenu}
+                onMouseLeave={scheduleCloseCreateMenu}
               >
                 <button
                   type="button"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   onClick={() => {
-                    onCreateShell('claude');
-                    setIsCreateMenuOpen(false);
+                    clearCloseCreateMenuTimer();
+                    setIsCreateMenuOpen((open) => !open);
                   }}
-                  title="Claude Shell"
+                  title="新建终端"
+                  aria-haspopup="menu"
+                  aria-expanded={isCreateMenuOpen}
                 >
-                  <SessionProviderLogo provider="claude" className="h-4 w-4" />
+                  <Plus className="h-4 w-4" />
                 </button>
-                <button
-                  type="button"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  onClick={() => {
-                    onCreateShell('codex');
-                    setIsCreateMenuOpen(false);
-                  }}
-                  title="Codex Shell"
+
+                <div
+                  className={
+                    'absolute left-full top-1/2 z-20 ml-1 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border/70 bg-background/95 p-1 shadow-lg backdrop-blur-sm transition-all ' +
+                    (isCreateMenuOpen
+                      ? 'pointer-events-auto translate-x-0 opacity-100'
+                      : 'pointer-events-none -translate-x-1 opacity-0')
+                  }
                 >
-                  <SessionProviderLogo provider="codex" className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  onClick={() => {
-                    onCreateShell('system');
-                    setIsCreateMenuOpen(false);
-                  }}
-                  title="System Shell"
-                >
-                  <Terminal className="h-4 w-4" />
-                </button>
+                  <button
+                    type="button"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    onClick={() => {
+                      onCreateShell('claude');
+                      setIsCreateMenuOpen(false);
+                    }}
+                    title="Claude Shell"
+                  >
+                    <SessionProviderLogo provider="claude" className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    onClick={() => {
+                      onCreateShell('codex');
+                      setIsCreateMenuOpen(false);
+                    }}
+                    title="Codex Shell"
+                  >
+                    <SessionProviderLogo provider="codex" className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    onClick={() => {
+                      onCreateShell('system');
+                      setIsCreateMenuOpen(false);
+                    }}
+                    title="System Shell"
+                  >
+                    <Terminal className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
